@@ -30,3 +30,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 运行时上传目录（本地产生的测试文件不入库）
+upload/
+*.log
