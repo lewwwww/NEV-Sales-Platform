@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--跟配置 namespace：需要映射接口的全限定类名-->
+<mapper namespace="com.qf.mapper.StoreupDao">
+    <!-- SQL 映射内容 id 需要执行的方法 resultType:返回值的类型-->
+    <select id="selectListView" resultType="StoreupEntity">
+        select * from storeup
+        <where>
+            1=1 ${ew.sqlSegment}
+        </where>
+
+    </select>
+
+
+
+
+</mapper>

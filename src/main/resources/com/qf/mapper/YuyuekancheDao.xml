@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 映射接口全限定类名 -->
+<mapper namespace="com.qf.mapper.YuyuekancheDao">
+    <!-- 基础列表查询 -->
+    <select id="selectListView" resultType="com.qf.entity.YuyuekancheEntity">
+        select * from yuyuekanche
+        <where>
+            1=1 ${ew.sqlSegment}
+        </where>
+    </select>
+
+    <!-- 数值统计（如按品牌统计预约数） -->
+    <select id="selectValue" resultType="map">
+        select ${params.xColumn},sum(${params.yColumn}) total
+        from yuyuekanche
+        <where>
+            1=1 ${ew.sqlSegment}
+        </where>
+        group by ${params.xColumn}
+        limit 10
+    </select>
+
+    <!-- 时间维度统计（日/月/年） -->
+    <select id="selectTimeStatValue" resultType="map">
+        <if test="params.timeStatType=='日'">
+            select DATE_FORMAT(${params.xColumn},'%Y-%m-%d') ${params.xColumn},
+            sum(${params.yColumn}) total
+            from yuyuekanche
+            <where>1=1 ${ew.sqlSegment}</where>
+            group by DATE_FORMAT(${params.xColumn},'%Y-%m-%d')
+        </if>
+        <if test="params.timeStatType=='月'">
+            select DATE_FORMAT(${params.xColumn},'%Y-%m') ${params.xColumn},
+            sum(${params.yColumn}) total
+            from yuyuekanche
+            <where>1=1 ${ew.sqlSegment}</where>
+            group by DATE_FORMAT(${params.xColumn},'%Y-%m')
+        </if>
+        <if test="params.timeStatType=='年'">
+            select DATE_FORMAT(${params.xColumn},'%Y') ${params.xColumn},
+            sum(${params.yColumn}) total
+            from yuyuekanche
+            <where>1=1 ${ew.sqlSegment}</where>
+            group by DATE_FORMAT(${params.xColumn},'%Y')
+        </if>
+    </select>
+
+    <!-- 分组统计（如按审核状态分组） -->
+    <select id="selectGroup" resultType="map">
+        select ${params.column},count(1) total
+        from yuyuekanche
+        <where>1=1 ${ew.sqlSegment}</where>
+        group by ${params.column}
+        limit 10
+    </select>
+</mapper>
