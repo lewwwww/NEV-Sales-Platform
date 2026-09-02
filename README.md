@@ -47,7 +47,6 @@
 hdspringbootproject02
 ├── pom.xml
 ├── HELP.md
-├── GIT_UPLOAD.md
 ├── src
 │   ├── springbootsnu6t.sql
 │   ├── main
@@ -228,27 +227,3 @@ mvn clean package
 ```
 
 项目当前是 `war` 打包方式，日常开发直接运行 `Hdspringbootproject02Application` 即可。打包产物会生成在 `target` 目录。
-
-## Git 提交说明
-
-项目已经绑定远程仓库后，后续提交代码一般按下面流程：
-
-```bash
-git status
-git add .
-git commit -m "本次修改说明"
-git push
-```
-
-更多 Git 操作说明见：
-
-```text
-GIT_UPLOAD.md
-```
-
-## 注意事项
-
-- 不要提交 `target/`、`.idea/` 等本地构建或 IDE 文件。
-- 公开仓库中不建议提交真实密码、Token、API Key、Secret Key。
-- 如果 GitHub 拒绝 push 并提示 repository rule violations，通常说明提交内容包含敏感信息，需要先处理敏感配置。
-- `upload/` 目录通常是运行时上传文件目录，是否提交应根据实际需要决定。
