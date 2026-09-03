@@ -22,9 +22,12 @@
 
 - Java 8
 - Spring Boot 2.3.12.RELEASE
+- Spring Web（内嵌 Tomcat）
 - MyBatis / MyBatis-Plus
-- MySQL
+- MySQL（mysql-connector-java）
 - Apache Shiro
+- JSR303 参数校验（spring-boot-starter-validation）
+- Lombok
 - Maven
 
 前端：
@@ -90,7 +93,15 @@ Controller -> Service -> Mapper -> MySQL
 
 ## 数据库初始化
 
-1. 启动 MySQL。
+本项目可使用本机 MySQL，也可使用 Docker 容器运行 MySQL，以下两种方式任选其一。
+
+### 方式一：Docker 容器（推荐，端口 3307，与 3306 上的其他服务隔离）
+
+1. 启动 MySQL 容器：
+
+```powershell
+docker run -d --name hdspringboot-mysql -p 3307:3306 -e MYSQL_ROOT_PASSWORD=henu -e TZ=Asia/Shanghai -v hdspringboot-mysql-data:/var/lib/mysql mysql:5.7
+```
 
 2. 创建数据库：
 
@@ -100,13 +111,23 @@ CREATE DATABASE springbootsnu6t DEFAULT CHARACTER SET utf8mb4;
 
 3. 导入 SQL 文件：
 
-```text
-src/springbootsnu6t.sql
+```powershell
+mysql --user=root --password=henu --host=127.0.0.1 --port=3307 springbootsnu6t < src/springbootsnu6t.sql
 ```
 
-可以使用 Navicat、DataGrip、MySQL Workbench 或命令行导入。
+### 方式二：本机 MySQL（默认 3306）
 
-注意：SQL 文件默认假定目标数据库名为 `springbootsnu6t`，导入前请先创建并选中该数据库。脚本包含表结构和示例数据，导入完成后即可使用默认账号登录。
+1. 启动本机 MySQL 服务。
+
+2. 创建数据库：
+
+```sql
+CREATE DATABASE springbootsnu6t DEFAULT CHARACTER SET utf8mb4;
+```
+
+3. 导入 SQL 文件：`src/springbootsnu6t.sql`，可使用 Navicat、DataGrip、MySQL Workbench 或命令行导入。
+
+> 注意：SQL 文件默认假定目标数据库名为 `springbootsnu6t`，导入前请先创建并选中该数据库。脚本包含表结构和示例数据，导入完成后即可使用默认账号登录。
 
 ## 修改数据库配置
 
@@ -116,7 +137,7 @@ src/springbootsnu6t.sql
 src/main/resources/application.yaml
 ```
 
-默认配置：
+默认配置（本机 MySQL 3306）：
 
 ```yaml
 spring:
@@ -124,6 +145,12 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/springbootsnu6t?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
     username: root
     password: henu
+```
+
+如果使用 Docker 容器（3307），将 url 中的端口改为 3307：
+
+```yaml
+url: jdbc:mysql://127.0.0.1:3307/springbootsnu6t?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
 ```
 
 如果本机 MySQL 用户名或密码不同，需要改成自己的配置。
