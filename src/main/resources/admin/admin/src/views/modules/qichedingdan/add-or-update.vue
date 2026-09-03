@@ -127,7 +127,7 @@
 				</el-form-item>
 			</template>
 			<el-form-item :style='{"padding":"0","margin":"0"}' class="btn">
-				<el-button :style='{"border":"0","cursor":"pointer","padding":"0","margin":"0 20px 0 0","outline":"none","color":"#333","borderRadius":"4px","background":"rgba(185, 216, 255, 1)","width":"128px","lineHeight":"40px","fontSize":"14px","height":"40px"}'  v-if="type!='info'" type="primary" class="btn-success" @click="onSubmit">提交</el-button>
+				<el-button :style='{"border":"0","cursor":"pointer","padding":"0","margin":"0 20px 0 0","outline":"none","color":"#333","borderRadius":"4px","background":"rgba(185, 216, 255, 1)","width":"128px","lineHeight":"40px","fontSize":"14px","height":"40px"}'  v-if="type!='info'" type="primary" class="btn-success" :loading="submitting" @click="onSubmit">提交</el-button>
 				<el-button :style='{"border":"0px solid rgba(64, 158, 255, 1)","cursor":"pointer","padding":"0","margin":"0","outline":"none","color":"#fff","borderRadius":"4px","background":"rgba(198, 205, 214, 1)","width":"128px","lineHeight":"40px","fontSize":"14px","height":"40px"}' v-if="type!='info'" class="btn-close" @click="back()">取消</el-button>
 				<el-button :style='{"border":"0px solid rgba(64, 158, 255, 1)","cursor":"pointer","padding":"0","margin":"0","outline":"none","color":"#fff","borderRadius":"4px","background":"rgba(198, 205, 214, 1)","width":"128px","lineHeight":"40px","fontSize":"14px","height":"40px"}' v-if="type=='info'" class="btn-close" @click="back()">返回</el-button>
 			</el-form-item>
@@ -204,6 +204,7 @@ export default {
 			}
 		};
 		return {
+		submitting: false,
 			id: '',
 			type: '',
 			
@@ -500,6 +501,8 @@ export default {
 
     // 提交
     onSubmit() {
+        if (this.submitting) return;
+        this.submitting = true;
         this.ruleForm.yingfujine = this.yingfujine
 
 
@@ -600,6 +603,7 @@ var objcross = this.$storage.getObj('crossObj');
 				if (data && data.code === 0) { 
 				       if(data.data.total>=crossoptnum) {
 					     this.$message.error(this.$storage.get('tips'));
+					       this.submitting = false;
 					       return false;
 				       } else {
 					 // 先由后端 subStock 原子扣减库存（防超卖），成功后再保存订单
@@ -610,6 +614,7 @@ var objcross = this.$storage.getObj('crossObj');
 					 }).then(({ data: sdata }) => {
 					   if (sdata && sdata.code !== 0) {
 					     this.$message.error(sdata.msg);
+					     this.submitting = false;
 					     return;
 					   }
 					   this.$http({
@@ -632,6 +637,7 @@ var objcross = this.$storage.getObj('crossObj');
 					       });
 					     } else {
 					       this.$message.error(data.msg);
+					       this.submitting = false;
 					     }
 					   });
 					 });
@@ -649,6 +655,7 @@ var objcross = this.$storage.getObj('crossObj');
 			 }).then(({ data: sdata }) => {
 			   if (sdata && sdata.code !== 0) {
 			     this.$message.error(sdata.msg);
+			     this.submitting = false;
 			     return;
 			   }
 			   this.$http({
@@ -671,10 +678,13 @@ var objcross = this.$storage.getObj('crossObj');
 			       });
 			     } else {
 			       this.$message.error(data.msg);
+			       this.submitting = false;
 			     }
 			   });
 			 });
 		 }
+         } else {
+           this.submitting = false;
          }
        });
     },

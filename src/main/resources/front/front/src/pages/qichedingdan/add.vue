@@ -85,7 +85,7 @@
           </el-form-item>
 
       <el-form-item :style='{"padding":"0","margin":"20px 0 20px 0"}'>
-        <el-button :style='{"border":"0","cursor":"pointer","padding":"0","boxShadow":"0px 0px 0px #ccc","margin":"0 20px 0 0","color":"#fff","outline":"none","borderRadius":"0px","background":"linear-gradient(320deg, rgba(48,134,185,1) 0%, rgba(197,230,250,1) 80%, rgba(48,134,185,1) 100%),#3086b9","width":"110px","lineHeight":"40px","fontSize":"14px","height":"40px"}'  type="primary" @click="onSubmit">提交</el-button>
+        <el-button :style='{"border":"0","cursor":"pointer","padding":"0","boxShadow":"0px 0px 0px #ccc","margin":"0 20px 0 0","color":"#fff","outline":"none","borderRadius":"0px","background":"linear-gradient(320deg, rgba(48,134,185,1) 0%, rgba(197,230,250,1) 80%, rgba(48,134,185,1) 100%),#3086b9","width":"110px","lineHeight":"40px","fontSize":"14px","height":"40px"}'  type="primary" :loading="submitting" @click="onSubmit">提交</el-button>
         <el-button :style='{"border":"0px solid #bbb","cursor":"pointer","padding":"0","boxShadow":"0px 0px 0px #eee","margin":"0","color":"#333","outline":"none","borderRadius":"0px","background":"linear-gradient(320deg, rgba(204,204,204,1) 0%, rgba(255,255,255,1) 80%, rgba(204,204,204,1) 100%),#999","width":"110px","lineHeight":"40px","fontSize":"14px","height":"40px"}' @click="back()">返回</el-button>
       </el-form-item>
     </el-form>
@@ -96,6 +96,7 @@
   export default {
     data() {
       return {
+      submitting: false,
         id: '',
         baseUrl: '',
         ro:{
@@ -338,6 +339,8 @@
       },
       // 提交
       onSubmit() {
+if (this.submitting) return;
+this.submitting = true;
 
           this.ruleForm.yingfujine = this.yingfujine
         var obj = JSON.parse(localStorage.getItem('crossObj'));
@@ -392,6 +395,7 @@
                           type: 'success',
                           duration: 1500,
                          });
+                          this.submitting = false;
                           return false;
                      } else {
                          // 跨表计算：先由后端 subStock 原子扣减库存（防超卖），成功后再创建订单
@@ -405,6 +409,7 @@
                                       type: 'error',
                                       duration: 1500
                                   });
+                                  this.submitting = false;
                                   return;
                               }
                               this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
@@ -423,6 +428,7 @@
                                           type: 'error',
                                           duration: 1500
                                       });
+                                      this.submitting = false;
                                   }
                               });
                           });
@@ -440,6 +446,7 @@
                               type: 'error',
                               duration: 1500
                           });
+                          this.submitting = false;
                           return;
                       }
                       this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
@@ -458,10 +465,13 @@
                                   type: 'error',
                                   duration: 1500
                               });
+                              this.submitting = false;
                           }
                       });
                   });
              }
+          } else {
+            this.submitting = false;
           }
         });
       },

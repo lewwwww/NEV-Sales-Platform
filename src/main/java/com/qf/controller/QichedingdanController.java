@@ -28,9 +28,35 @@ public class QichedingdanController {
      */
     @RequestMapping("/add")
     public R add(@RequestBody QichedingdanEntity qichedingdan, HttpServletRequest request){
+        // 防重复下单：同一账号 + 同一车 + 存在未完成（未发货）订单时拒绝
+        R dup = duplicateCheck(qichedingdan);
+        if (dup != null) {
+            return dup;
+        }
         qichedingdan.setId(new Date().getTime());
         qichedingdanService.insert(qichedingdan);
         return R.ok();
+    }
+
+    /**
+     * 防重复下单校验：同一账号下同一车辆存在未完成（未发货）订单时，拒绝再次下单。
+     * 信息不完整（无账号/无车名）时不拦截，交给表单校验处理。
+     */
+    private R duplicateCheck(QichedingdanEntity qichedingdan) {
+        String zhanghao = qichedingdan.getZhanghao();
+        String cheming = qichedingdan.getCheming();
+        if (zhanghao == null || zhanghao.isEmpty() || cheming == null || cheming.isEmpty()) {
+            return null;
+        }
+        EntityWrapper<QichedingdanEntity> ck = new EntityWrapper<>();
+        ck.eq("zhanghao", zhanghao)
+          .eq("cheming", cheming)
+          .eq("dingdanzhuangtai", "未发货");
+        int cnt = qichedingdanService.selectCount(ck);
+        if (cnt > 0) {
+            return R.error("您已有该车辆的未完成订单，请勿重复下单");
+        }
+        return null;
     }
 
     /**
@@ -111,8 +137,11 @@ public class QichedingdanController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody  QichedingdanEntity qichedingdan) {
-
-
+        // 防重复下单：同一账号 + 同一车 + 存在未完成（未发货）订单时拒绝
+        R dup = duplicateCheck(qichedingdan);
+        if (dup != null) {
+            return dup;
+        }
         qichedingdanService.insert(qichedingdan);
         return R.ok();
     }
