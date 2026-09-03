@@ -116,6 +116,31 @@ public class XinnnegyuanqicheController {
     }
 
     /**
+     * 库存条件扣减（防超卖）
+     * 原子扣减：库存充足才扣减，库存不足返回错误；
+     * 并发场景下由数据库行锁保证原子性，避免超卖和丢更新。
+     * @param params 需包含车辆 id 与扣减数量 num
+     */
+    @RequestMapping("/subStock")
+    public R subStock(@RequestBody Map<String, Object> params){
+        Object idObj = params.get("id");
+        Object numObj = params.get("num");
+        if (idObj == null || numObj == null) {
+            return R.error("参数不完整");
+        }
+        Long id = Long.valueOf(idObj.toString());
+        Integer num = Integer.valueOf(numObj.toString());
+        if (num <= 0) {
+            return R.error("扣减数量不合法");
+        }
+        int rows = xinnnegyuanqicheService.subStock(id, num);
+        if (rows == 0) {
+            return R.error("库存不足");
+        }
+        return R.ok();
+    }
+
+    /**
      * 删除
      * @param ids
      * @return

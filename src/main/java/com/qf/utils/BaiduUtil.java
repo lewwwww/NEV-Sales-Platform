@@ -6,7 +6,10 @@ import com.baidu.aip.nlp.AipNlp;
 import com.baidu.aip.ocr.AipOcr;
 import com.baidu.aip.speech.AipSpeech;
 import com.baidubce.qianfan.Qianfan;
+import com.baidubce.qianfan.model.RetryConfig;
 import com.baidubce.qianfan.model.chat.ChatResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,6 +24,7 @@ import java.net.URL;
 
 public class BaiduUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(BaiduUtil.class);
 
     /**
      * 获取API访问token
@@ -244,12 +248,29 @@ public class BaiduUtil {
 
 
     public static String qfChat(String msg) {
-        Qianfan qianfan = new Qianfan(ACCESS_KEY, ACCESS_SECRET_KEY);
-        // 指定模型
-        ChatResponse resp = qianfan.chatCompletion()
-                .model("ERNIE-3.5-8K")
-                .addMessage("user", msg)
-                .execute();
-        return resp.getResult();
+        try {
+            Qianfan qianfan = new Qianfan(ACCESS_KEY, ACCESS_SECRET_KEY);
+            // 配置重试：网络抖动/瞬时失败最多重试 2 次，指数退避，避免直接返回错误
+            RetryConfig retryConfig = new RetryConfig()
+                    .setRetryCount(2)
+                    .setBackoffFactor(1.5)
+                    .setMaxWaitInterval(5000);
+            qianfan.setRetryConfig(retryConfig);
+            // 指定模型
+            ChatResponse resp = qianfan.chatCompletion()
+                    .model("ERNIE-3.5-8K")
+                    .addMessage("user", msg)
+                    .execute();
+            String result = resp.getResult();
+            if (result == null || result.isEmpty()) {
+                log.warn("AI 返回空结果, msg={}", msg);
+                return "抱歉，AI 暂时没有回复，请换个问法再试";
+            }
+            return result;
+        } catch (Exception e) {
+            // 降级兜底：AI 服务不可用时返回友好文案，不让异常堆栈暴露给前端
+            log.error("AI 问答调用失败", e);
+            return "AI 服务暂时不可用，请稍后再试";
+        }
     }
 }

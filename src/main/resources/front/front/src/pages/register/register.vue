@@ -154,7 +154,7 @@ export default {
 			width: 100%;
 		}
 		
-		.rgs-form .el-input /deep/ .el-input__inner {
+		.rgs-form .el-input ::v-deep .el-input__inner {
 						border-radius: 0px;
 						padding: 0 10px;
 						box-shadow: 0px 0px 0px #a0d8db;
@@ -169,7 +169,7 @@ export default {
 						height: 40px;
 					}
 		
-		.rgs-form .el-select /deep/ .el-input__inner {
+		.rgs-form .el-select ::v-deep .el-input__inner {
 						border: 0px solid #eacb96;
 						padding: 0 10px;
 						color: #999;
@@ -185,7 +185,7 @@ export default {
 						height: 40px;
 					}
 		
-		.rgs-form .el-date-editor /deep/ .el-input__inner {
+		.rgs-form .el-date-editor ::v-deep .el-input__inner {
 						border-radius: 0px;
 						padding: 0 10px 0 30px;
 						box-shadow: 0px 0px 0px #a0d8db;
@@ -200,7 +200,7 @@ export default {
 						height: 40px;
 					}
 		
-		.rgs-form .el-date-editor /deep/ .el-input__inner {
+		.rgs-form .el-date-editor ::v-deep .el-input__inner {
 						border-radius: 0px;
 						padding: 0 10px 0 30px;
 						box-shadow: 0px 0px 0px #a0d8db;
@@ -215,7 +215,7 @@ export default {
 						height: 40px;
 					}
 		
-		.rgs-form /deep/ .el-upload--picture-card {
+		.rgs-form ::v-deep .el-upload--picture-card {
 			background: transparent;
 			border: 0;
 			border-radius: 0;
@@ -225,7 +225,7 @@ export default {
 			vertical-align: middle;
 		}
 		
-		.rgs-form /deep/ .upload .upload-img {
+		.rgs-form ::v-deep .upload .upload-img {
 		  		  border: 2px dotted #c4deee;
 		  		  cursor: pointer;
 		  		  border-radius: 0px;
@@ -238,7 +238,7 @@ export default {
 		  		  height: 80px;
 		  		}
 		
-		.rgs-form /deep/ .el-upload-list .el-upload-list__item {
+		.rgs-form ::v-deep .el-upload-list .el-upload-list__item {
 		  		  border: 2px dotted #c4deee;
 		  		  cursor: pointer;
 		  		  border-radius: 0px;
@@ -251,7 +251,7 @@ export default {
 		  		  height: 80px;
 		  		}
 		
-		.rgs-form /deep/ .el-upload .el-icon-plus {
+		.rgs-form ::v-deep .el-upload .el-icon-plus {
 		  		  border: 2px dotted #c4deee;
 		  		  cursor: pointer;
 		  		  border-radius: 0px;

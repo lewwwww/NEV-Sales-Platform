@@ -27,6 +27,8 @@ module.exports = {
         }
     },
 lintOnSave: false,
+    // node20 下 thread-loader 多线程与 vue-loader 兼容性差，关闭并行构建
+    parallel: false,
     devServer: {
         host: "0.0.0.0", //指定使用一个 host。默认是 localhost，这里默认值即可
         port: 8081, //指定端口

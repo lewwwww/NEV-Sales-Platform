@@ -342,11 +342,7 @@
           this.ruleForm.yingfujine = this.yingfujine
         var obj = JSON.parse(localStorage.getItem('crossObj'));
         var table = localStorage.getItem('crossTable');
-        obj.shuliang = obj.shuliang - this.ruleForm.shuliang
-        if(obj.shuliang<0){
-          this.$message.error("数量不足");
-          return
-        }
+        // 库存校验与扣减由后端 subStock 原子完成（防超卖），前端不再自行计算
       
         //this.$http.post(table+`/update`, obj).then(res => {});
         //更新跨表属性
@@ -367,6 +363,8 @@
                              }
                          }
                          var table = localStorage.getItem('crossTable');
+                         // 数量字段由 subStock 统一扣减，这里只更新状态列，避免覆盖扣减结果
+                         delete obj.shuliang;
                          this.$http.post(table+'/update', obj).then(res => {});
                      } else {
                             crossuserid=Number(localStorage.getItem('userid'));
@@ -396,30 +394,37 @@
                          });
                           return false;
                      } else {
-                         // 跨表计算
+                         // 跨表计算：先由后端 subStock 原子扣减库存（防超卖），成功后再创建订单
                           var obj = JSON.parse(localStorage.getItem('crossObj'));
                           var table = localStorage.getItem('crossTable');
 
-                          obj.shuliang = parseFloat(obj.shuliang) - parseFloat(this.ruleForm.shuliang)
-
-                          this.$http.post(table+`/update`,obj).then(res => {});
-                          this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
-                              if (res.data.code == 0) {
+                          this.$http.post(table+`/subStock`, {id: obj.id, num: this.ruleForm.shuliang}).then(sres => {
+                              if (sres.data.code != 0) {
                                   this.$message({
-                                      message: '操作成功',
-                                      type: 'success',
-                                      duration: 1500,
-                                      onClose: () => {
-                                          this.$router.go(-1);
-                                      }
-                                  });
-                              } else {
-                                  this.$message({
-                                      message: res.data.msg,
+                                      message: sres.data.msg,
                                       type: 'error',
                                       duration: 1500
                                   });
+                                  return;
                               }
+                              this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
+                                  if (res.data.code == 0) {
+                                      this.$message({
+                                          message: '操作成功',
+                                          type: 'success',
+                                          duration: 1500,
+                                          onClose: () => {
+                                              this.$router.go(-1);
+                                          }
+                                      });
+                                  } else {
+                                      this.$message({
+                                          message: res.data.msg,
+                                          type: 'error',
+                                          duration: 1500
+                                      });
+                                  }
+                              });
                           });
                      }
                  });
@@ -427,26 +432,34 @@
                   var obj = JSON.parse(localStorage.getItem('crossObj'));
                   var table = localStorage.getItem('crossTable');
 
-                  obj.shuliang = parseFloat(obj.shuliang) - parseFloat(this.ruleForm.shuliang)
-
-                  this.$http.post(table+`/update`,obj).then(res => {});
-                  this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
-                     if (res.data.code == 0) {
+                  // 先由后端 subStock 原子扣减库存（防超卖），成功后再创建订单
+                  this.$http.post(table+`/subStock`, {id: obj.id, num: this.ruleForm.shuliang}).then(sres => {
+                      if (sres.data.code != 0) {
                           this.$message({
-                              message: '操作成功',
-                              type: 'success',
-                              duration: 1500,
-                              onClose: () => {
-                                  this.$router.go(-1);
-                              }
-                          });
-                      } else {
-                          this.$message({
-                              message: res.data.msg,
+                              message: sres.data.msg,
                               type: 'error',
                               duration: 1500
                           });
+                          return;
                       }
+                      this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
+                         if (res.data.code == 0) {
+                              this.$message({
+                                  message: '操作成功',
+                                  type: 'success',
+                                  duration: 1500,
+                                  onClose: () => {
+                                      this.$router.go(-1);
+                                  }
+                              });
+                          } else {
+                              this.$message({
+                                  message: res.data.msg,
+                                  type: 'error',
+                                  duration: 1500
+                              });
+                          }
+                      });
                   });
              }
           }
@@ -469,7 +482,7 @@
 		width: auto;
 	}
 	
-	.add-update-preview .el-form-item /deep/ .el-form-item__label {
+	.add-update-preview .el-form-item ::v-deep .el-form-item__label {
 	  padding: 0 10px 0 0;
 	  color: #666;
 	  font-weight: 500;
@@ -479,11 +492,11 @@
 	  text-align: right;
 	}
 	
-	.add-update-preview .el-form-item /deep/ .el-form-item__content {
+	.add-update-preview .el-form-item ::v-deep .el-form-item__content {
 	  margin-left: 80px;
 	}
 	
-	.add-update-preview .el-input /deep/ .el-input__inner {
+	.add-update-preview .el-input ::v-deep .el-input__inner {
 	  border-radius: 4px;
 	  padding: 0 12px;
 	  outline: none;
@@ -497,7 +510,7 @@
 	  height: 40px;
 	}
 	
-	.add-update-preview .el-select /deep/ .el-input__inner {
+	.add-update-preview .el-select ::v-deep .el-input__inner {
 	  border-radius: 4px;
 	  padding: 0 10px;
 	  outline: none;
@@ -511,7 +524,7 @@
 	  height: 40px;
 	}
 	
-	.add-update-preview .el-date-editor /deep/ .el-input__inner {
+	.add-update-preview .el-date-editor ::v-deep .el-input__inner {
 	  border-radius: 4px;
 	  padding: 0 10px 0 30px;
 	  outline: none;
@@ -525,7 +538,7 @@
 	  height: 40px;
 	}
 	
-	.add-update-preview /deep/ .el-upload--picture-card {
+	.add-update-preview ::v-deep .el-upload--picture-card {
 		background: transparent;
 		border: 0;
 		border-radius: 0;
@@ -535,7 +548,7 @@
 		vertical-align: middle;
 	}
 	
-	.add-update-preview /deep/ .upload .upload-img {
+	.add-update-preview ::v-deep .upload .upload-img {
 	  cursor: pointer;
 	  border: 2px dotted #9dcde9;
 	  border-radius: 6px;
@@ -548,7 +561,7 @@
 	  height: auto;
 	}
 	
-	.add-update-preview /deep/ .el-upload-list .el-upload-list__item {
+	.add-update-preview ::v-deep .el-upload-list .el-upload-list__item {
 	  cursor: pointer;
 	  border: 2px dotted #9dcde9;
 	  border-radius: 6px;
@@ -561,7 +574,7 @@
 	  height: auto;
 	}
 	
-	.add-update-preview /deep/ .el-upload .el-icon-plus {
+	.add-update-preview ::v-deep .el-upload .el-icon-plus {
 	  cursor: pointer;
 	  border: 2px dotted #9dcde9;
 	  border-radius: 6px;
@@ -574,7 +587,7 @@
 	  height: auto;
 	}
 	
-	.add-update-preview .el-textarea /deep/ .el-textarea__inner {
+	.add-update-preview .el-textarea ::v-deep .el-textarea__inner {
 	  border: 2px dotted #9dcde9;
 	  border-radius: 4px;
 	  padding: 12px;

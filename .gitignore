@@ -34,3 +34,6 @@ build/
 # 运行时上传目录（本地产生的测试文件不入库）
 upload/
 *.log
+
+# 前端 npm 依赖（不提交，npm install 安装）
+node_modules/

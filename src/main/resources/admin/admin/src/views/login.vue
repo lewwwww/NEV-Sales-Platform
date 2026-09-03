@@ -180,7 +180,7 @@ export default {
   background-size: cover;
       background: url(https://ts3.tc.mm.bing.net/th/id/OIP-C.LttV0t6ahmj8r7eOh3PJwgHaE8?rs=1&pid=ImgDetMain&o=7&rm=3);
         
-  .list-item /deep/ .el-input .el-input__inner {
+  .list-item ::v-deep .el-input .el-input__inner {
 		border: 0px solid rgba(64, 158, 255, 1);
 		padding: 0 10px;
 		box-shadow: 0px 4px 10px 0px rgba(0,0,0,0.3020);
@@ -191,7 +191,7 @@ export default {
 		height: 44px;
 	  }
   
-  .list-code /deep/ .el-input .el-input__inner {
+  .list-code ::v-deep .el-input .el-input__inner {
   	  	border: 0px solid rgba(64, 158, 255, 1);
   	  	padding: 0 10px;
   	  	box-shadow: 0px 4px 10px 0px rgba(0,0,0,0.3020);
@@ -202,19 +202,19 @@ export default {
   	  	height: 44px;
   	  }
 
-  .list-type /deep/ .el-radio__input .el-radio__inner {
+  .list-type ::v-deep .el-radio__input .el-radio__inner {
 		background: rgba(53, 53, 53, 0);
 		border-color: #666666;
 	  }
-  .list-type /deep/ .el-radio__input.is-checked .el-radio__inner {
+  .list-type ::v-deep .el-radio__input.is-checked .el-radio__inner {
         background: rgba(23, 62, 140, 1);
         border-color: rgba(23, 62, 140, 1);
       }
-  .list-type /deep/ .el-radio__label {
+  .list-type ::v-deep .el-radio__label {
 		color: #666666;
 		font-size: 14px;
 	  }
-  .list-type /deep/ .el-radio__input.is-checked+.el-radio__label {
+  .list-type ::v-deep .el-radio__input.is-checked+.el-radio__label {
         color: rgba(23, 62, 140, 1);
         font-size: 14px;
       }

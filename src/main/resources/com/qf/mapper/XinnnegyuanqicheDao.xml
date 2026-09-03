@@ -61,4 +61,10 @@
 
 
 
+    <update id="subStock">
+        update xinnengyuanqiche
+        set shuliang = shuliang - #{num}
+        where id = #{id} and shuliang >= #{num}
+    </update>
+
 </mapper>

@@ -41,4 +41,9 @@ public class XinnnegyuanqicheServiceImpl extends ServiceImpl<XinnnegyuanqicheDao
     public List<Map<String, Object>> selectGroup(Map<String, Object> params, Wrapper<XinnengyuanqicheEntity> wrapper) {
         return baseMapper.selectGroup(params, wrapper);
     }
+
+    @Override
+    public int subStock(Long id, Integer num) {
+        return baseMapper.subStock(id, num);
+    }
 }

@@ -545,11 +545,7 @@ export default {
 var objcross = this.$storage.getObj('crossObj');
       var table = this.$storage.getObj('crossTable');
       if(objcross!=null) {
-	      objcross.shuliang = objcross.shuliang - this.ruleForm.shuliang
-	      if(objcross.shuliang<0){
-		this.$message.error("数量不足");
-		return
-	      }
+	      // 库存校验与扣减由后端 subStock 原子完成（防超卖），前端不再自行计算
                 }
 
       //更新跨表属性
@@ -568,16 +564,13 @@ var objcross = this.$storage.getObj('crossObj');
                                  }
                                }
                                var table = this.$storage.get('crossTable');
+                               // 只更新状态列，数量由 subStock 统一扣减，避免覆盖
+                               delete obj.shuliang;
                              this.$http({
                                  url: `${table}/update`,
                                  method: "post",
                                  data: obj
                                }).then(({ data }) => {});
-                              this.$http({
-                                  url: `${table}/update`,
-                                  method: "post",
-                                  data: objcross
-                                }).then(({ data }) => {});
                        } else {
                                crossuserid=this.$storage.get('userid');
                                crossrefid=obj['id'];
@@ -609,32 +602,38 @@ var objcross = this.$storage.getObj('crossObj');
 					     this.$message.error(this.$storage.get('tips'));
 					       return false;
 				       } else {
+					 // 先由后端 subStock 原子扣减库存（防超卖），成功后再保存订单
 					 this.$http({
-					   url: `qichedingdan/${!this.ruleForm.id ? "save" : "update"}`,
+					   url: `${table}/subStock`,
 					   method: "post",
-					   data: this.ruleForm
-					 }).then(({ data }) => {
-					   if (data && data.code === 0) {
-					     this.$message({
-					       message: "操作成功",
-					       type: "success",
-					       duration: 1500,
-					       onClose: () => {
-						 this.parent.showFlag = true;
-						 this.parent.addOrUpdateFlag = false;
-						 this.parent.qichedingdanCrossAddOrUpdateFlag = false;
-						 this.parent.search();
-						 this.parent.contentStyleChange();
-					       }
-					     });
-                      this.$http({
-                          url: `${table}/update`,
-                          method: "post",
-                          data: objcross
-                        }).then(({ data }) => {});
-					   } else {
-					     this.$message.error(data.msg);
+					   data: { id: objcross.id, num: this.ruleForm.shuliang }
+					 }).then(({ data: sdata }) => {
+					   if (sdata && sdata.code !== 0) {
+					     this.$message.error(sdata.msg);
+					     return;
 					   }
+					   this.$http({
+					     url: `qichedingdan/${!this.ruleForm.id ? "save" : "update"}`,
+					     method: "post",
+					     data: this.ruleForm
+					   }).then(({ data }) => {
+					     if (data && data.code === 0) {
+					       this.$message({
+					         message: "操作成功",
+					         type: "success",
+					         duration: 1500,
+					         onClose: () => {
+					           this.parent.showFlag = true;
+					           this.parent.addOrUpdateFlag = false;
+					           this.parent.qichedingdanCrossAddOrUpdateFlag = false;
+					           this.parent.search();
+					           this.parent.contentStyleChange();
+					         }
+					       });
+					     } else {
+					       this.$message.error(data.msg);
+					     }
+					   });
 					 });
 
 				       }
@@ -642,32 +641,38 @@ var objcross = this.$storage.getObj('crossObj');
 				} 
 			});
 		 } else {
+			 // 先由后端 subStock 原子扣减库存（防超卖），成功后再保存订单
 			 this.$http({
-			   url: `qichedingdan/${!this.ruleForm.id ? "save" : "update"}`,
+			   url: `${table}/subStock`,
 			   method: "post",
-			   data: this.ruleForm
-			 }).then(({ data }) => {
-			   if (data && data.code === 0) {
-                  this.$http({
-                      url: `${table}/update`,
-                      method: "post",
-                      data: objcross
-                    }).then(({ data }) => {});
-			     this.$message({
-			       message: "操作成功",
-			       type: "success",
-			       duration: 1500,
-			       onClose: () => {
-				 this.parent.showFlag = true;
-				 this.parent.addOrUpdateFlag = false;
-				 this.parent.qichedingdanCrossAddOrUpdateFlag = false;
-				 this.parent.search();
-				 this.parent.contentStyleChange();
-			       }
-			     });
-			   } else {
-			     this.$message.error(data.msg);
+			   data: { id: objcross.id, num: this.ruleForm.shuliang }
+			 }).then(({ data: sdata }) => {
+			   if (sdata && sdata.code !== 0) {
+			     this.$message.error(sdata.msg);
+			     return;
 			   }
+			   this.$http({
+			     url: `qichedingdan/${!this.ruleForm.id ? "save" : "update"}`,
+			     method: "post",
+			     data: this.ruleForm
+			   }).then(({ data }) => {
+			     if (data && data.code === 0) {
+			       this.$message({
+			         message: "操作成功",
+			         type: "success",
+			         duration: 1500,
+			         onClose: () => {
+			           this.parent.showFlag = true;
+			           this.parent.addOrUpdateFlag = false;
+			           this.parent.qichedingdanCrossAddOrUpdateFlag = false;
+			           this.parent.search();
+			           this.parent.contentStyleChange();
+			         }
+			       });
+			     } else {
+			       this.$message.error(data.msg);
+			     }
+			   });
 			 });
 		 }
          }
@@ -701,7 +706,7 @@ var objcross = this.$storage.getObj('crossObj');
 		width: auto;
 	}
 	
-	.add-update-preview .el-form-item /deep/ .el-form-item__label {
+	.add-update-preview .el-form-item ::v-deep .el-form-item__label {
 	  	  padding: 0 20px 0 0;
 	  	  color: #666;
 	  	  font-weight: 500;
@@ -711,11 +716,11 @@ var objcross = this.$storage.getObj('crossObj');
 	  	  text-align: right;
 	  	}
 	
-	.add-update-preview .el-form-item /deep/ .el-form-item__content {
+	.add-update-preview .el-form-item ::v-deep .el-form-item__content {
 	  margin-left: 140px;
 	}
 	
-	.add-update-preview .el-input /deep/ .el-input__inner {
+	.add-update-preview .el-input ::v-deep .el-input__inner {
 	  	  border:  2px solid rgba(198, 205, 214, 1);
 	  	  border-radius: 4px;
 	  	  padding: 0 12px;
@@ -726,7 +731,7 @@ var objcross = this.$storage.getObj('crossObj');
 	  	  height: 40px;
 	  	}
 	
-	.add-update-preview .el-select /deep/ .el-input__inner {
+	.add-update-preview .el-select ::v-deep .el-input__inner {
 	  	  border:  2px solid rgba(198, 205, 214, 1);
 	  	  border-radius: 4px;
 	  	  padding: 0 10px;
@@ -737,7 +742,7 @@ var objcross = this.$storage.getObj('crossObj');
 	  	  height: 40px;
 	  	}
 	
-	.add-update-preview .el-date-editor /deep/ .el-input__inner {
+	.add-update-preview .el-date-editor ::v-deep .el-input__inner {
 	  	  border:  2px solid rgba(198, 205, 214, 1);
 	  	  border-radius: 4px;
 	  	  padding: 0 10px 0 30px;
@@ -748,7 +753,7 @@ var objcross = this.$storage.getObj('crossObj');
 	  	  height: 40px;
 	  	}
 	
-	.add-update-preview /deep/ .el-upload--picture-card {
+	.add-update-preview ::v-deep .el-upload--picture-card {
 		background: transparent;
 		border: 0;
 		border-radius: 0;
@@ -758,7 +763,7 @@ var objcross = this.$storage.getObj('crossObj');
 		vertical-align: middle;
 	}
 	
-	.add-update-preview /deep/ .upload .upload-img {
+	.add-update-preview ::v-deep .upload .upload-img {
 	  	  border:  2px dashed rgba(198, 205, 214, 1);
 	  	  cursor: pointer;
 	  	  border-radius: 6px;
@@ -770,7 +775,7 @@ var objcross = this.$storage.getObj('crossObj');
 	  	  height: 150px;
 	  	}
 	
-	.add-update-preview /deep/ .el-upload-list .el-upload-list__item {
+	.add-update-preview ::v-deep .el-upload-list .el-upload-list__item {
 	  	  border:  2px dashed rgba(198, 205, 214, 1);
 	  	  cursor: pointer;
 	  	  border-radius: 6px;
@@ -782,7 +787,7 @@ var objcross = this.$storage.getObj('crossObj');
 	  	  height: 150px;
 	  	}
 	
-	.add-update-preview /deep/ .el-upload .el-icon-plus {
+	.add-update-preview ::v-deep .el-upload .el-icon-plus {
 	  	  border:  2px dashed rgba(198, 205, 214, 1);
 	  	  cursor: pointer;
 	  	  border-radius: 6px;
@@ -794,7 +799,7 @@ var objcross = this.$storage.getObj('crossObj');
 	  	  height: 150px;
 	  	}
 	
-	.add-update-preview .el-textarea /deep/ .el-textarea__inner {
+	.add-update-preview .el-textarea ::v-deep .el-textarea__inner {
 	  	  border:  2px dashed rgba(198, 205, 214, 1);
 	  	  border-radius: 4px;
 	  	  padding: 12px;

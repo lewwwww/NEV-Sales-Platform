@@ -176,12 +176,12 @@ export default {
 		background: url(https://bpic.588ku.com/back_pic/06/11/60/406214f5287338a.jpg!/fw/750/quality/99/unsharp/true/compress/true) no-repeat center top / 100% 100%;
 		
 		.el-form-item {
-		  & /deep/ .el-form-item__content {
+		  & ::v-deep .el-form-item__content {
 		    width: 100%;
 		  }
 		}
 		
-		.list-item /deep/ .el-input .el-input__inner {
+		.list-item ::v-deep .el-input .el-input__inner {
 			border: 0px solid #eacb96;
 			border-radius: 0px;
 			padding: 0 10px;
@@ -196,7 +196,7 @@ export default {
 			height: 44px;
 		}
 		
-		.list-code /deep/ .el-input .el-input__inner {
+		.list-code ::v-deep .el-input .el-input__inner {
 			border: 0px solid #eacb96;
 			padding: 0 10px;
 			color: #999;
@@ -214,19 +214,19 @@ export default {
 			height: 44px;
 		}
 		
-		.list-type /deep/ .el-radio__input .el-radio__inner {
+		.list-type ::v-deep .el-radio__input .el-radio__inner {
 			background: rgba(53, 53, 53, 0);
 			border-color: #666666;
 		}
-		.list-type /deep/ .el-radio__input.is-checked .el-radio__inner {
+		.list-type ::v-deep .el-radio__input.is-checked .el-radio__inner {
 			background: #3086b9;
 			border-color: #3086b9;
 		}
-		.list-type /deep/ .el-radio__label {
+		.list-type ::v-deep .el-radio__label {
 			color: #666666;
 			font-size: 14px;
 		}
-		.list-type /deep/ .el-radio__input.is-checked+.el-radio__label {
+		.list-type ::v-deep .el-radio__input.is-checked+.el-radio__label {
 			color: #3086b9;
 			font-size: 14px;
 		}

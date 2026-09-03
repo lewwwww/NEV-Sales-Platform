@@ -375,7 +375,7 @@
   .center-preview {
   
     .el-tabs {
-      & /deep/ .el-tabs__header {
+      & ::v-deep .el-tabs__header {
         .el-tabs__nav-wrap {
           margin: 0;
   
@@ -403,7 +403,7 @@
     }
   }
   
-  .center-preview .el-tabs /deep/ .el-tabs__header {
+  .center-preview .el-tabs ::v-deep .el-tabs__header {
 	border-radius: 0;
 	padding: 0px;
 	box-shadow: 0px 0px 0px #eee;
@@ -417,7 +417,7 @@
 	float: left;
   }
   
-  .center-preview .el-tabs /deep/ .el-tabs__header .el-tabs__item {
+  .center-preview .el-tabs ::v-deep .el-tabs__header .el-tabs__item {
   	padding: 0 0px;
   	margin: 0 0 0px;
   	color: #333;
@@ -438,7 +438,7 @@
   	height: 50px;
   }
   
-  .center-preview .el-tabs /deep/ .el-tabs__header .el-tabs__item:hover {
+  .center-preview .el-tabs ::v-deep .el-tabs__header .el-tabs__item:hover {
   	border-radius: 0;
   	padding: 0 10px;
   	box-shadow: 0px 0px 0px #eee;
@@ -453,7 +453,7 @@
   	height: 50px;
   }
   
-  .center-preview .el-tabs /deep/ .el-tabs__header .el-tabs__item.is-active {
+  .center-preview .el-tabs ::v-deep .el-tabs__header .el-tabs__item.is-active {
   	padding: 0 10px;
   	margin: 0;
   	color: #fff;
@@ -470,7 +470,7 @@
   	height: 50px;
   }
   
-  .center-preview .el-tabs /deep/ .el-tabs__content .el-tab-pane {
+  .center-preview .el-tabs ::v-deep .el-tabs__content .el-tab-pane {
   	padding: 20px 10px;
   	background: linear-gradient(320deg, rgba(204,204,204,.0) 0%, rgba(255,255,255,.9) 80%, rgba(204,204,204,.0) 100%);
   	width: calc(100% - 40px);
@@ -481,7 +481,7 @@
   	height: auto;
   }
   
-  .center-preview-pv .el-form-item /deep/ .el-form-item__label {
+  .center-preview-pv .el-form-item ::v-deep .el-form-item__label {
   	padding: 0 10px 0 0;
   	color: #666;
   	font-weight: 500;
@@ -495,7 +495,7 @@
     margin-left: 120px;
   }
   
-  .center-preview-pv .el-input /deep/ .el-input__inner {
+  .center-preview-pv .el-input ::v-deep .el-input__inner {
   	border-radius: 4px;
   	padding: 0 12px;
   	outline: none;
@@ -509,7 +509,7 @@
   	height: 40px;
   }
   
-  .center-preview-pv .el-select /deep/ .el-input__inner {
+  .center-preview-pv .el-select ::v-deep .el-input__inner {
   	border-radius: 4px;
   	padding: 0 12px;
   	outline: none;
@@ -523,7 +523,7 @@
   	height: 40px;
   }
   
-  .center-preview-pv .el-date-editor /deep/ .el-input__inner {
+  .center-preview-pv .el-date-editor ::v-deep .el-input__inner {
   	border-radius: 4px;
   	padding: 0 10px 0 30px;
   	outline: none;
@@ -537,7 +537,7 @@
   	height: 40px;
   }
   
-  .center-preview-pv /deep/ .avatar-uploader-icon {
+  .center-preview-pv ::v-deep .avatar-uploader-icon {
   	border: 2px dotted #9dcde9;
   	cursor: pointer;
   	border-radius: 0px;
@@ -551,7 +551,7 @@
   	height: auto;
   }
   
-  .center-preview-pv .el-form-item.balance /deep/ .el-input__inner {
+  .center-preview-pv .el-form-item.balance ::v-deep .el-input__inner {
   	padding: 0 12px;
   	margin: 0 8px 0 0;
   	color: #666;

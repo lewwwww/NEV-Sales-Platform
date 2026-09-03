@@ -17,4 +17,9 @@ public interface XinnnegyuanqicheService extends IService<XinnengyuanqicheEntity
     List<Map<String, Object>> selectTimeStatValue( Map<String, Object> params,  Wrapper<XinnengyuanqicheEntity> wrapper);
 
     List<Map<String, Object>> selectGroup(Map<String, Object> params, Wrapper<XinnengyuanqicheEntity> wrapper);
+
+    /**
+     * 库存条件扣减（防超卖）
+     */
+    int subStock(Long id, Integer num);
 }
