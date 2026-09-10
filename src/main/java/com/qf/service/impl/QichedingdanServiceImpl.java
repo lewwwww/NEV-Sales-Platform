@@ -24,7 +24,7 @@ public class QichedingdanServiceImpl extends ServiceImpl<QichedingdanDao, Qiched
     @Override
     public PageUtils queryPage(Map<String, Object> params, Wrapper<QichedingdanEntity> wrapper) {
         Page<QichedingdanEntity> page = new Query<QichedingdanEntity>(params).getPage();
-        page.setRecords(baseMapper.selectListView(wrapper));
+        page.setRecords(baseMapper.selectListView(page, wrapper));
         return new PageUtils(page);
     }
 

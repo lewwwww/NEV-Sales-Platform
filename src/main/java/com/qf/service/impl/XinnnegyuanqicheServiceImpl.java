@@ -24,7 +24,7 @@ public class XinnnegyuanqicheServiceImpl extends ServiceImpl<XinnnegyuanqicheDao
     @Override
     public PageUtils queryPage(Map<String, Object> params, Wrapper<XinnengyuanqicheEntity> wrapper) {
         Page<XinnengyuanqicheEntity> page = new Query<XinnengyuanqicheEntity>(params).getPage();
-        page.setRecords(baseMapper.selectListView(wrapper));
+        page.setRecords(baseMapper.selectListView(page, wrapper));
         return new PageUtils(page);
     }
     @Override

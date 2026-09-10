@@ -23,7 +23,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersDao, UsersEntity>implemen
     @Override
     public PageUtils queryPage(Map<String, Object> params, Wrapper<UsersEntity> wrapper) {
         Page<UsersEntity> page = new Query<UsersEntity>(params).getPage();
-        page.setRecords(baseMapper.selectListView(wrapper));
+        page.setRecords(baseMapper.selectListView(page, wrapper));
         return new PageUtils(page);
     }
 }
