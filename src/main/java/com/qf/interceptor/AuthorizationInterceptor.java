@@ -19,16 +19,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 /**
- * 权限(Token)验证
+ * 权限(Token)验证拦截器
+ * 用于处理需要登录权限的接口访问控制
  */
 @Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
+    // 登录Token在请求头中的键名常量
     public static final String LOGIN_TOKEN_KEY = "Token";
 
+    // 自动注入Token服务，用于处理Token相关操作
     @Autowired
     private TokenService tokenService;
     
+    /**
+     * 前置拦截器
+     * 在请求处理之前进行调用，进行权限验证
+     * @param request 当前HTTP请求
+     * @param response 当前HTTP响应
+     * @param handler 请求处理的方法
+     * @return true:继续流程 false:终端流程
+     * @throws Exception 处理异常时抛出
+     */
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 

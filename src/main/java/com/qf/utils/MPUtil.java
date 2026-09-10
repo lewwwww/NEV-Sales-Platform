@@ -28,10 +28,20 @@ public class MPUtil {
 		   return camelToUnderlineMap(map,"");
 	   }
 
+/**
+ * 根据前缀生成所有包含该前缀的模糊查询条件
+ * @param wrapper 查询包装器对象，用于构建查询条件
+ * @param bean 包含查询条件的实体对象
+ * @param pre 字段前缀，用于筛选需要生成模糊查询条件的字段
+ * @return 返回构建好的查询包装器对象，包含所有匹配前缀的模糊查询条件
+ */
 		public static Wrapper allLikePre(Wrapper wrapper,Object bean,String pre) {
+    // 将实体对象转换为Map形式
 			   Map<String, Object> map =BeanUtil.beanToMap(bean);
+    // 将Map中的键转换为下划线格式，并添加指定前缀
 			   Map result = camelToUnderlineMap(map,pre);
 			 
+    // 根据转换后的结果生成模糊查询条件
 			return genLike(wrapper,result);
 		}
 	
@@ -55,26 +65,47 @@ public class MPUtil {
 			return wrapper;
 		}
 		
+/**
+ * 根据bean对象生成包含like或eq条件的包装器
+ * @param wrapper 原始包装器对象
+ * @param bean 包含查询条件的bean对象
+ * @return 返回生成的新包装器对象，包含like或eq条件
+ */
 		public static Wrapper likeOrEq(Wrapper wrapper,Object bean) {
-			  Map result = BeanUtil.beanToMap(bean, true, true);			 
+    // 将bean对象转换为map，忽略空值和下划线线转驼峰
+			  Map result = BeanUtil.beanToMap(bean, true, true);
+    // 调用genLikeOrEq方法生成最终的包装器
 			return genLikeOrEq(wrapper,result);
 		}
 		
+/**
+ * 根据参数生成包含LIKE或等于条件的包装器
+ * @param wrapper 初始包装器对象
+ * @param param 包含参数键值对的Map
+ * @return 返回构建好的包装器对象
+ */
 		public static Wrapper genLikeOrEq( Wrapper wrapper,Map param) {
+    // 获取参数Map的迭代器
 			Iterator<Map.Entry<String, Object>> it = param.entrySet().iterator();
-			int i=0;
+			int i=0;  // 用于标记是否是第一个参数
+    // 遍历参数Map中的所有键值对
 			while (it.hasNext()) {
+        // 如果不是第一个参数，添加AND条件连接
 				if(i>0) wrapper.and();
+        // 获取当前键值对
 				Map.Entry<String, Object> entry = it.next();
 				String key = entry.getKey();
+        // 判断参数值是否包含百分号(%)，决定使用LIKE还是等于条件
 				if(entry.getValue().toString().contains("%")) {
+            // 如果包含百分号，使用LIKE条件，并移除百分号
 					wrapper.like(key, entry.getValue().toString().replace("%", ""));
 				} else {
+            // 如果不包含百分号，使用等于条件
 					wrapper.eq(key, entry.getValue());
 				}
-				i++;
+				i++;  // 增加参数计数
 			}
-			return wrapper;
+			return wrapper;  // 返回构建好的包装器
 		}
 		
 		public static Wrapper allEq(Wrapper wrapper,Object bean) {
