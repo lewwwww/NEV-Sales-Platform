@@ -90,7 +90,7 @@ public class PinpaileibieController {
      * @param pinpaileibie
      * @return
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody  PinpaileibieEntity pinpaileibie){
 
         if (pinpaileibieService.selectOne(new EntityWrapper<PinpaileibieEntity>().eq("pinpaileibie", pinpaileibie.getPinpaileibie())) != null) {

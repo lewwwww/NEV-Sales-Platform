@@ -67,7 +67,7 @@ public class YuyuekancheController {
      * 预约提交（保存）
      */
     @IgnoreAuth
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody YuyuekancheEntity yuyuekanche) {
         // 预约编号查重（可选）
         if (yuyuekancheService.selectOne(new EntityWrapper<YuyuekancheEntity>().eq("yuyuebianhao", yuyuekanche.getYuyuebianhao())) != null) {

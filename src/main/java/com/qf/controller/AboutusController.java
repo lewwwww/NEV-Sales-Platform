@@ -78,7 +78,7 @@ public class AboutusController {
     /**
      * 保存/新增关于我们内容（管理员）
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody AboutusEntity aboutus) {
         aboutusService.insert(aboutus);
         return R.ok("关于我们内容新增成功");

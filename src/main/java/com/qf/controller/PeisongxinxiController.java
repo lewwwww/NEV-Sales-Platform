@@ -71,7 +71,7 @@ public class PeisongxinxiController {
     /**
      * 新增配送信息（管理员/下单时自动创建）
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody PeisongxinxiEntity peisongxinxi) {
         // 订单编号查重
         if (peisongxinxiService.selectOne(new EntityWrapper<PeisongxinxiEntity>().eq("dingdanbianhao", peisongxinxi.getDingdanbianhao())) != null) {

@@ -22,4 +22,9 @@ public interface QichedingdanDao extends BaseMapper<QichedingdanEntity> {
     List<Map<String, Object>> selectTimeStatValue(@Param("params") Map<String, Object> params, @Param("ew") Wrapper<QichedingdanEntity> wrapper);
 
     List<Map<String, Object>> selectGroup(@Param("params") Map<String, Object> params, @Param("ew") Wrapper<QichedingdanEntity> wrapper);
+
+    /**
+     * 支付标记（防并发重复支付）：仅未支付状态可更新，返回受影响行数
+     */
+    int markPaid(@Param("id") Long id);
 }

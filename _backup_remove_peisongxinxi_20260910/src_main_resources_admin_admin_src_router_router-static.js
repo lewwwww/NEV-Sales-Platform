@@ -16,6 +16,7 @@ import pinpaileibie from '@/views/modules/pinpaileibie/list'
 import news from '@/views/modules/news/list'
 import aboutus from '@/views/modules/aboutus/list'
 import discussxinnengyuanqiche from '@/views/modules/discussxinnengyuanqiche/list'
+import peisongxinxi from '@/views/modules/peisongxinxi/list'
 import peisongdingdan from '@/views/modules/peisongdingdan/list'
 import xinnengyuanqiche from '@/views/modules/xinnengyuanqiche/list'
 import yuyuekanche from '@/views/modules/yuyuekanche/list'
@@ -74,6 +75,11 @@ const routes = [{
             path: '/discussxinnengyuanqiche',
             name: '新能源汽车评论',
             component: discussxinnengyuanqiche
+        }
+        , {
+            path: '/peisongxinxi',
+            name: '配送信息',
+            component: peisongxinxi
         }
         , {
             path: '/peisongdingdan',

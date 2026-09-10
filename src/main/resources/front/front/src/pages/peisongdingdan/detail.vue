@@ -96,7 +96,6 @@
 					<div  :style='{"width":"100%","padding":"8px 10px 0","fontSize":"14px","lineHeight":"24px","color":"#666","height":"auto"}'>{{detail.jiedanbeizhu}}</div>
 				</div>
 				<div class="btn" :style='{"padding":"10px 0","flexWrap":"wrap","background":"none","display":"flex"}'>
-					<el-button :style='{"border":"0px solid #ffc800","cursor":"pointer","padding":"0 10px","margin":"0 5px 0 0","outline":"none","color":"#fff","borderRadius":"4px","background":"linear-gradient(320deg, rgba(48,134,185,1) 0%, rgba(137,185,213,1) 80%, rgba(48,134,185,1) 100%),rgb(48,134,185)","width":"auto","lineHeight":"40px","fontSize":"14px","height":"40px"}' v-if="isAuth('peisongdingdan','更新配送')" @click="onAcross('peisongxinxi','','','')" type="warning">更新配送</el-button>
 				</div>
 			</div>
 			

@@ -398,20 +398,10 @@ this.submitting = true;
                           this.submitting = false;
                           return false;
                      } else {
-                         // 跨表计算：先由后端 subStock 原子扣减库存（防超卖），成功后再创建订单
+                         // 扣库存与建订单已合并：由后端 add 接口单事务完成（@Transactional 条件扣减 + 插入）
                           var obj = JSON.parse(localStorage.getItem('crossObj'));
                           var table = localStorage.getItem('crossTable');
 
-                          this.$http.post(table+`/subStock`, {id: obj.id, num: this.ruleForm.shuliang}).then(sres => {
-                              if (sres.data.code != 0) {
-                                  this.$message({
-                                      message: sres.data.msg,
-                                      type: 'error',
-                                      duration: 1500
-                                  });
-                                  this.submitting = false;
-                                  return;
-                              }
                               this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
                                   if (res.data.code == 0) {
                                       this.$message({
@@ -431,24 +421,13 @@ this.submitting = true;
                                       this.submitting = false;
                                   }
                               });
-                          });
                      }
                  });
              } else {
                   var obj = JSON.parse(localStorage.getItem('crossObj'));
                   var table = localStorage.getItem('crossTable');
 
-                  // 先由后端 subStock 原子扣减库存（防超卖），成功后再创建订单
-                  this.$http.post(table+`/subStock`, {id: obj.id, num: this.ruleForm.shuliang}).then(sres => {
-                      if (sres.data.code != 0) {
-                          this.$message({
-                              message: sres.data.msg,
-                              type: 'error',
-                              duration: 1500
-                          });
-                          this.submitting = false;
-                          return;
-                      }
+                  // 扣库存与建订单已合并：由后端 add 接口单事务完成（@Transactional 条件扣减 + 插入）
                       this.$http.post('qichedingdan/add', this.ruleForm).then(res => {
                          if (res.data.code == 0) {
                               this.$message({
@@ -468,7 +447,6 @@ this.submitting = true;
                               this.submitting = false;
                           }
                       });
-                  });
              }
           } else {
             this.submitting = false;

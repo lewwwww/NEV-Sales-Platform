@@ -82,7 +82,7 @@ public class SystemintroController {
     /**
      * 保存/新增关于我们内容（管理员）
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody SystemintroEntity systemintro) {
         // 标题查重（可选，避免重复内容）
         if (systemintroService.selectOne(new EntityWrapper<SystemintroEntity>().eq("title", systemintro.getTitle())) != null) {

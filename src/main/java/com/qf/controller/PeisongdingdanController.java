@@ -67,7 +67,7 @@ public class PeisongdingdanController {
      * 下单（保存配送订单）
      */
     @IgnoreAuth
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody PeisongdingdanEntity peisongdingdan) {
         // 订单编号查重
         if (peisongdingdanService.selectOne(new EntityWrapper<PeisongdingdanEntity>().eq("dingdanbianhao", peisongdingdan.getDingdanbianhao())) != null) {

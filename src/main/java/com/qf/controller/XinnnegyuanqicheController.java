@@ -93,7 +93,7 @@ public class XinnnegyuanqicheController {
      * @param xinnengyuanqiche
      * @return
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody XinnengyuanqicheEntity xinnengyuanqiche){
 
         if (xinnnegyuanqicheService.selectOne(new EntityWrapper<XinnengyuanqicheEntity>().eq("cheming", xinnengyuanqiche.getCheming())) != null) {

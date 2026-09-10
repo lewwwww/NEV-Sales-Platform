@@ -168,6 +168,7 @@
 					<el-table-column width="300" label="操作">
 						<template slot-scope="scope">
 							<el-button :style='{"border":"0","cursor":"pointer","padding":"0 24px","margin":"0 10px 5px 0","outline":"none","color":"#333","borderRadius":"4px","background":"rgba(230, 242, 254, 1)","width":"auto","fontSize":"14px","height":"32px"}' v-if=" isAuth('peisongdingdan','查看')" type="success" size="mini" @click="addOrUpdateHandler(scope.row.id,'info')">详情</el-button>
+							<el-button :style='{"border":"0","cursor":"pointer","padding":"0 24px","margin":"0 10px 5px 0","outline":"none","color":"#333","borderRadius":"4px","background":"rgba(230, 242, 254, 1)","width":"auto","fontSize":"14px","height":"32px"}' v-if="isAuth('peisongdingdan','更新配送')" type="success" size="mini" @click="peisongxinxiCrossAddOrUpdateHandler(scope.row,'cross','','','')">更新配送</el-button>
 							<el-button :style='{"border":"0","cursor":"pointer","padding":"0 24px","margin":"0 10px 5px 0","outline":"none","color":"#333","borderRadius":"4px","background":"rgba(230, 242, 254, 1)","width":"auto","fontSize":"14px","height":"32px"}' v-if=" isAuth('peisongdingdan','修改')" type="primary" size="mini" @click="addOrUpdateHandler(scope.row.id)">修改</el-button>
 
 
@@ -198,6 +199,7 @@
 		<!-- 添加/修改页面  将父组件的search方法传递给子组件-->
 		<add-or-update v-if="addOrUpdateFlag" :parent="this" ref="addOrUpdate"></add-or-update>
 
+		<peisongxinxi-cross-add-or-update v-if="peisongxinxiCrossAddOrUpdateFlag" :parent="this" ref="peisongxinxiCrossaddOrUpdate"></peisongxinxi-cross-add-or-update>
 
 
 
@@ -208,6 +210,7 @@
 <script>
 import axios from 'axios'
 import AddOrUpdate from "./add-or-update";
+import peisongxinxiCrossAddOrUpdate from "../peisongxinxi/add-or-update";
 export default {
   data() {
     return {
@@ -231,6 +234,7 @@ export default {
       chartVisiable4: false,
       chartVisiable5: false,
       addOrUpdateFlag:false,
+      peisongxinxiCrossAddOrUpdateFlag: false,
       layouts: ["total","prev","pager","next","sizes","jumper"],
 
     };
@@ -249,6 +253,7 @@ export default {
   },
   components: {
     AddOrUpdate,
+    peisongxinxiCrossAddOrUpdate,
   },
   methods: {
 
@@ -271,6 +276,37 @@ export default {
       // this.contents.pageEachNum = 10
     },
 
+    peisongxinxiCrossAddOrUpdateHandler(row,type,crossOptAudit,statusColumnName,tips,statusColumnValue){
+      this.showFlag = false;
+      this.addOrUpdateFlag = false;
+      this.peisongxinxiCrossAddOrUpdateFlag = true;
+      this.$storage.set('crossObj',row);
+      this.$storage.set('crossTable','peisongdingdan');
+      this.$storage.set('statusColumnName',statusColumnName);
+      this.$storage.set('statusColumnValue',statusColumnValue);
+      this.$storage.set('tips',tips);
+	if(statusColumnName!=''&&!statusColumnName.startsWith("[")) {
+		var obj = this.$storage.getObj('crossObj');
+		for (var o in obj){
+		  if(o==statusColumnName && obj[o]==statusColumnValue){
+		    this.$message({
+		      message: tips,
+		      type: "success",
+		      duration: 1500,
+		      onClose: () => {
+			this.getDataList();
+		      }
+		    });
+		      this.showFlag = true;
+		      this.peisongxinxiCrossAddOrUpdateFlag = false;
+			return;
+		  }
+		}
+	}
+      this.$nextTick(() => {
+      this.$refs.peisongxinxiCrossaddOrUpdate.init(row.id,type);
+      });
+    },
 
 
 

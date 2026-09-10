@@ -63,7 +63,7 @@ public class NewsController {
     /**
      * 保存/新增公告（管理员）
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody NewsEntity news) {
         newsService.insert(news);
         return R.ok("公告新增成功");

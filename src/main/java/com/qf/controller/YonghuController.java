@@ -178,7 +178,7 @@ public class YonghuController {
      * @param users
      * @return
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody YonghuEntity users){
 
         if (yonghuService.selectOne(new EntityWrapper<YonghuEntity>().eq("zhanghao", users.getZhanghao())) != null) {

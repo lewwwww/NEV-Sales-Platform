@@ -86,25 +86,47 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.obj.ispay = "已支付";
-        this.$http({
-          url: `${this.table}/update`,
-          method: "post",
-          data: this.obj
-        }).then(({ data }) => {
-          if (data && data.code === 0) {
-            this.$message({
-              message: "支付成功",
-              type: "success",
-              duration: 1500,
-              onClose: () => {
-                this.$router.go(-1);
-              }
-            });
-          } else {
-            this.$message.error(data.msg);
-          }
-        });
+        if (this.table === "qichedingdan") {
+          // 汽车订单走后端支付接口：归属/金额/状态校验 + 条件更新防并发重复支付
+          this.$http({
+            url: "qichedingdan/pay",
+            method: "post",
+            data: { id: this.obj.id, amount: this.obj.yingfujine, payType: this.type }
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: "支付成功",
+                type: "success",
+                duration: 1500,
+                onClose: () => {
+                  this.$router.go(-1);
+                }
+              });
+            } else {
+              this.$message.error(data.msg);
+            }
+          });
+        } else {
+          this.obj.ispay = "已支付";
+          this.$http({
+            url: `${this.table}/update`,
+            method: "post",
+            data: this.obj
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: "支付成功",
+                type: "success",
+                duration: 1500,
+                onClose: () => {
+                  this.$router.go(-1);
+                }
+              });
+            } else {
+              this.$message.error(data.msg);
+            }
+          });
+        }
       });
     },
     back(){

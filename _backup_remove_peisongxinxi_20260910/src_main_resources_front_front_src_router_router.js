@@ -24,6 +24,9 @@ import qichedingdanAdd from '../pages/qichedingdan/add'
 import peisongdingdanList from '../pages/peisongdingdan/list'
 import peisongdingdanDetail from '../pages/peisongdingdan/detail'
 import peisongdingdanAdd from '../pages/peisongdingdan/add'
+import peisongxinxiList from '../pages/peisongxinxi/list'
+import peisongxinxiDetail from '../pages/peisongxinxi/detail'
+import peisongxinxiAdd from '../pages/peisongxinxi/add'
 import yuyuekancheList from '../pages/yuyuekanche/list'
 import yuyuekancheDetail from '../pages/yuyuekanche/detail'
 import yuyuekancheAdd from '../pages/yuyuekanche/add'
@@ -126,6 +129,18 @@ export default new VueRouter({
 				{
 					path: 'peisongdingdanAdd',
 					component: peisongdingdanAdd
+				},
+				{
+					path: 'peisongxinxi',
+					component: peisongxinxiList
+				},
+				{
+					path: 'peisongxinxiDetail',
+					component: peisongxinxiDetail
+				},
+				{
+					path: 'peisongxinxiAdd',
+					component: peisongxinxiAdd
 				},
 				{
 					path: 'yuyuekanche',

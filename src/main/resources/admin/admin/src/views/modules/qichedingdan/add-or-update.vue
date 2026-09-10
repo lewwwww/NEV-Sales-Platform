@@ -504,6 +504,10 @@ export default {
         if (this.submitting) return;
         this.submitting = true;
         this.ruleForm.yingfujine = this.yingfujine
+        // 幂等号：新增（save）时生成一次，连点/重试复用同一个；编辑（update）不处理
+        if (!this.ruleForm.id) {
+            this.ruleForm.requestId = this.getRequestId();
+        }
 
 
 
@@ -548,7 +552,7 @@ export default {
 var objcross = this.$storage.getObj('crossObj');
       var table = this.$storage.getObj('crossTable');
       if(objcross!=null) {
-	      // 库存校验与扣减由后端 subStock 原子完成（防超卖），前端不再自行计算
+	      // 库存校验与扣减由后端下单接口单事务完成（防超卖），前端不再自行计算
                 }
 
       //更新跨表属性
@@ -567,7 +571,7 @@ var objcross = this.$storage.getObj('crossObj');
                                  }
                                }
                                var table = this.$storage.get('crossTable');
-                               // 只更新状态列，数量由 subStock 统一扣减，避免覆盖
+                               // 只更新状态列，数量由后端下单接口事务内扣减，避免覆盖
                                delete obj.shuliang;
                              this.$http({
                                  url: `${table}/update`,
@@ -606,17 +610,7 @@ var objcross = this.$storage.getObj('crossObj');
 					       this.submitting = false;
 					       return false;
 				       } else {
-					 // 先由后端 subStock 原子扣减库存（防超卖），成功后再保存订单
-					 this.$http({
-					   url: `${table}/subStock`,
-					   method: "post",
-					   data: { id: objcross.id, num: this.ruleForm.shuliang }
-					 }).then(({ data: sdata }) => {
-					   if (sdata && sdata.code !== 0) {
-					     this.$message.error(sdata.msg);
-					     this.submitting = false;
-					     return;
-					   }
+					 // 扣库存与建订单已合并：由后端下单接口单事务完成（@Transactional 条件扣减 + 插入）
 					   this.$http({
 					     url: `qichedingdan/${!this.ruleForm.id ? "save" : "update"}`,
 					     method: "post",
@@ -640,24 +634,13 @@ var objcross = this.$storage.getObj('crossObj');
 					       this.submitting = false;
 					     }
 					   });
-					 });
 
 				       }
 				} else { 
 				} 
 			});
 		 } else {
-			 // 先由后端 subStock 原子扣减库存（防超卖），成功后再保存订单
-			 this.$http({
-			   url: `${table}/subStock`,
-			   method: "post",
-			   data: { id: objcross.id, num: this.ruleForm.shuliang }
-			 }).then(({ data: sdata }) => {
-			   if (sdata && sdata.code !== 0) {
-			     this.$message.error(sdata.msg);
-			     this.submitting = false;
-			     return;
-			   }
+			 // 扣库存与建订单已合并：由后端下单接口单事务完成（@Transactional 条件扣减 + 插入）
 			   this.$http({
 			     url: `qichedingdan/${!this.ruleForm.id ? "save" : "update"}`,
 			     method: "post",
@@ -681,12 +664,15 @@ var objcross = this.$storage.getObj('crossObj');
 			       this.submitting = false;
 			     }
 			   });
-			 });
 		 }
          } else {
            this.submitting = false;
          }
        });
+    },
+    // 获取幂等号：一次下单意图一个 id，连点/重试复用同一个
+    getRequestId () {
+      return 'req_' + new Date().getTime() + '_' + Math.random().toString(36).slice(2, 10);
     },
     // 获取uuid
     getUUID () {

@@ -162,6 +162,11 @@ public class QichedingdanEntity<T> implements Serializable {
 	 */
 					
 	private String ispay;
+
+	/**
+	 * 幂等号（requestId）
+	 */
+	private String requestId;
 	
 	
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
@@ -421,6 +426,18 @@ public class QichedingdanEntity<T> implements Serializable {
 	 */
 	public String getIspay() {
 		return ispay;
+	}
+	/**
+	 * 设置：幂等号
+	 */
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+	/**
+	 * 获取：幂等号
+	 */
+	public String getRequestId() {
+		return requestId;
 	}
 
 }

@@ -123,7 +123,7 @@ public class UsersController {
      * @param users
      * @return
      */
-    @RequestMapping("/save")
+    @RequestMapping({"/save","/add"})
     public R save(@RequestBody UsersEntity users){
 
         if (usersService.selectOne(new EntityWrapper<UsersEntity>().eq("username", users.getUsername())) != null) {

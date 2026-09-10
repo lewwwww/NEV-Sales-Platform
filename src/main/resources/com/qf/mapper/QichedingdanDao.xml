@@ -58,5 +58,9 @@
         limit 10
     </select>
 
+    <update id="markPaid">
+        update qichedingdan set ispay = '已支付' where id = #{id} and (ispay is null or ispay &lt;&gt; '已支付')
+    </update>
+
 
 </mapper>
