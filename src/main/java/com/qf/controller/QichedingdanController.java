@@ -9,8 +9,11 @@ import com.qf.entity.XinnengyuanqicheEntity;
 import com.qf.service.QichedingdanService;
 import com.qf.mapper.XinnnegyuanqicheDao;
 import com.qf.utils.MPUtil;
+import com.qf.utils.OrderStateMachine;
 import com.qf.utils.PageUtils;
 import com.qf.utils.R;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/qichedingdan")
 public class QichedingdanController {
+
+    private static final Logger log = LoggerFactory.getLogger(QichedingdanController.class);
 
     @Autowired
     private QichedingdanService qichedingdanService;
@@ -245,9 +250,38 @@ public class QichedingdanController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody QichedingdanEntity qichedingdan) {
+        // 状态机校验：ispay / dingdanzhuangtai 发生变化时，必须走合法流转（防回退、防跳步）
+        Long orderId = qichedingdan.getId();
+        if (orderId != null) {
+            QichedingdanEntity old = qichedingdanService.selectById(orderId);
+            if (old != null) {
+                String oldIspay = old.getIspay();
+                String oldStatus = old.getDingdanzhuangtai();
+                String newIspay = qichedingdan.getIspay();
+                String newStatus = qichedingdan.getDingdanzhuangtai();
+                // 部分更新：未传的状态字段视为保持原值，而不是清空
+                if (newIspay == null) { newIspay = oldIspay; }
+                if (newStatus == null) { newStatus = oldStatus; }
+                boolean stateChanged = !eqSafe(oldIspay, newIspay) || !eqSafe(oldStatus, newStatus);
+                if (stateChanged) {
+                    String err = OrderStateMachine.checkTransition(oldIspay, oldStatus, newIspay, newStatus);
+                    if (err != null) {
+                        return R.error(err);
+                    }
+                    // 操作日志：合法流转记录一条（生产可落操作日志表，当前先打日志）
+                    log.info("[订单状态流转] id={} {} -> {}", orderId,
+                            OrderStateMachine.display(oldIspay, oldStatus),
+                            OrderStateMachine.display(newIspay, newStatus));
+                }
+            }
+        }
         //正常更新
         qichedingdanService.updateById(qichedingdan);
         return R.ok();
+    }
+
+    private boolean eqSafe(String a, String b) {
+        return a == null ? b == null : a.equals(b);
     }
 
     /**
