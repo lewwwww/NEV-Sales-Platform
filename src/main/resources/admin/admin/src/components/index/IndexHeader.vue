@@ -45,6 +45,11 @@
 			onLogout() {
 				let storage = this.$storage
 				let router = this.$router
+				// 生产环境化改造：登出调用后端接口清 Session 与 HttpOnly Cookie
+				let sessionTable = storage.get('sessionTable')
+				if (sessionTable) {
+					this.$http({url: sessionTable + '/logout', method: 'get'}).then(() => {}).catch(() => {});
+				}
 				storage.clear()
 				router.replace({
 					name: "login"

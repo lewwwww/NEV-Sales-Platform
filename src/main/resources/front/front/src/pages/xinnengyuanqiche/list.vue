@@ -148,7 +148,7 @@
       getHotList() {
         let autoSortUrl = "";
         autoSortUrl = "xinnengyuanqiche/autoSort";
-        if(localStorage.getItem('Token')) {
+        if(localStorage.getItem('UserTableName')) {
             autoSortUrl = "xinnengyuanqiche/autoSort2";
         }
           this.$http.get(autoSortUrl, {params: {

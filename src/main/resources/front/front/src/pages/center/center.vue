@@ -174,7 +174,7 @@
         dialogFormVisibleVip: false,
         uploadUrl: config.baseUrl + 'file/upload',
         imageUrl: '',
-        headers: {Token: localStorage.getItem('Token')},
+        headers: {},
         userTableName: localStorage.getItem('UserTableName'),
         dynamicProp: {}
       }
@@ -355,8 +355,9 @@
         this.title = event.target.outerText;
       },
       logout() {
+        // 生产环境化改造：登出调用后端接口清 Session 与 HttpOnly Cookie
+        this.$http.get(this.userTableName + '/logout').then(() => {}).catch(() => {});
         localStorage.clear();
-        Vue.http.headers.common['Token'] = "";
         this.$router.push('/index/home');
         this.activeIndex = '0'
         localStorage.setItem('keyPath', this.activeIndex)

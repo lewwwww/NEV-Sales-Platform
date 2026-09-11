@@ -141,7 +141,7 @@ export default {
           if (valid) {
             this.$http.get(`${this.loginForm.tableName}/login`, {params: this.loginForm}).then(res => {
               if (res.data.code === 0) {
-                localStorage.setItem('Token', res.data.token);
+                // 生产环境化改造：Token 已由后端写入 HttpOnly Cookie，不再存 localStorage
                 localStorage.setItem('UserTableName', this.loginForm.tableName);
                 localStorage.setItem('username', this.loginForm.username);
                 localStorage.setItem('adminName', this.loginForm.username);

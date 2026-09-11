@@ -160,7 +160,7 @@ export default {
 				ask: '',
 				userid: localStorage.getItem('userid')
 			},
-			Token: localStorage.getItem('Token'),
+			Token: '', // 生产环境化改造：Token 走 HttpOnly Cookie，不再本地存储
             username: localStorage.getItem('username'),
             notAdmin: localStorage.getItem('sessionTable')!='"users"',
 			timer: '',
@@ -215,14 +215,14 @@ export default {
           this.activeIndex = x
         }
       }
-      this.Token = localStorage.getItem('Token')
+      this.Token = '' // 生产环境化改造：Token 走 HttpOnly Cookie
     },
   },
     created() {
 		this.baseUrl = this.$config.baseUrl;
 		this.menuList = this.$config.indexNav;
 		this.getCarousel();
-        if(localStorage.getItem('Token') && localStorage.getItem('Token')!=null) {
+        if(localStorage.getItem('UserTableName')) {
             this.saveChathelper('主人，我是您的智能助手小搏，请问有什么可以帮您！');
             this.getChatList();
         }
@@ -305,9 +305,11 @@ export default {
 		  this.$router.push('/login');
 		},
         logout() {
+            // 生产环境化改造：登出调用后端接口清 Session 与 HttpOnly Cookie
+            let utn = localStorage.getItem('UserTableName')
+            if (utn) { this.$http.get(utn + '/logout').then(() => {}).catch(() => {}); }
             localStorage.clear();
-            Vue.http.headers.common['Token'] = "";
-            this.$router.push('/index/home');
+                        this.$router.push('/index/home');
             this.activeIndex = '0'
             localStorage.setItem('keyPath', this.activeIndex)
             this.Token = ''
@@ -353,7 +355,7 @@ export default {
 			this.chatFormVisible = false;
 		},
 		goChat() {
-            if(!localStorage.getItem('Token')) {
+            if(!localStorage.getItem('UserTableName')) {
                 this.toLogin();
                 return;
             }
@@ -361,7 +363,7 @@ export default {
 			this.timer = setInterval(this.getChatList, 2000);
 		},
 		goMenu(path) {
-            if (!localStorage.getItem('Token')) {
+            if (!localStorage.getItem('UserTableName')) {
                 this.toLogin();
             } else {
                 this.$router.push(path);

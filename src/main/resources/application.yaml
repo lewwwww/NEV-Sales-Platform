@@ -19,6 +19,21 @@ spring:
       max-request-size: 300MB
   resources:
     static-locations: classpath:static/,file:static/
+  # Redis：会话共享（生产环境化改造，解决多实例部署 Session 不共享问题）
+  redis:
+    host: 127.0.0.1
+    port: 6380
+    password: ${REDIS_PASSWORD:hdredis2026}
+    timeout: 5000ms
+    lettuce:
+      pool:
+        max-active: 16
+        max-idle: 8
+        min-idle: 2
+  # Session 存入 Redis（默认 JDK 序列化，Session 属性需可序列化）
+  session:
+    store-type: redis
+    timeout: 1h
 
 #mybatis
 mybatis-plus:

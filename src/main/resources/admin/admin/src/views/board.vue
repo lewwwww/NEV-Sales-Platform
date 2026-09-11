@@ -133,7 +133,7 @@ export default {
         })
     },
     init(){
-        if(this.$storage.get('Token')){
+        if(this.$storage.get('sessionTable')){
         this.$http({
             url: `${this.$storage.get('sessionTable')}/session`,
             method: "get"

@@ -102,7 +102,7 @@ export default {
       // serverUrl: `${base.url}sys/storage/uploadSwiper?token=${storage.get('token')}`, // 这里写你要上传的图片服务器地址
       header: {
         // token: sessionStorage.token
-       'Token': this.$storage.get("Token")
+       // 生产环境化改造：Token 走 HttpOnly Cookie
       } // 有的图片服务器要求请求头需要有token
     };
   },

@@ -2,6 +2,7 @@ package com.qf.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,7 +25,7 @@ public class YonghuEntity<T> implements Serializable {
 
 
 	public YonghuEntity() {
-		
+			
 	}
 	
 	public YonghuEntity(T t) {
@@ -44,43 +45,49 @@ public class YonghuEntity<T> implements Serializable {
 	/**
 	 * 账号
 	 */
-					
+				
 	private String zhanghao;
 	
 	/**
 	 * 密码
 	 */
-					
+				
 	private String mima;
+	
+	/**
+	 * 原密码（修改密码时前端透传，仅用于后端校验，不落库）
+	 */
+	@TableField(exist = false)
+	private String oldPassword;
 	
 	/**
 	 * 姓名
 	 */
-					
+				
 	private String xingming;
 	
 	/**
 	 * 性别
 	 */
-					
+				
 	private String xingbie;
 	
 	/**
 	 * 身份证
 	 */
-					
+				
 	private String shenfenzheng;
 	
 	/**
 	 * 手机号码
 	 */
-					
+				
 	private String shoujihaoma;
 	
 	/**
 	 * 头像
 	 */
-					
+				
 	private String touxiang;
 	
 	
@@ -125,6 +132,18 @@ public class YonghuEntity<T> implements Serializable {
 	 */
 	public String getMima() {
 		return mima;
+	}
+	/**
+	 * 设置：原密码（不落库）
+	 */
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
+	}
+	/**
+	 * 获取：原密码（不落库）
+	 */
+	public String getOldPassword() {
+		return oldPassword;
 	}
 	/**
 	 * 设置：姓名

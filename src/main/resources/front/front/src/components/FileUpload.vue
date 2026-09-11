@@ -25,7 +25,6 @@
   </div>
 </template>
 <script>
-import storage from "@/common/storage";
 import config from "@/config/config";
 export default {
   data() {
@@ -44,9 +43,8 @@ export default {
   props: ["tip", "action", "limit", "multiple", "fileUrls"],
   mounted() {
     this.init();
-    this.myHeaders= {
-      'Token':storage.get("Token")
-    }
+    // 生产环境化改造：Token 走 HttpOnly Cookie，上传无需再带 Token 头
+    this.myHeaders= {}
   },
   watch: {
     fileUrls: function(val, oldVal) {
@@ -79,7 +77,7 @@ export default {
       }
     },
     handleBeforeUpload(file) {
-	
+		
     },
     // 上传文件成功后执行
     handleUploadSuccess(res, file, fileList) {
@@ -113,8 +111,6 @@ export default {
     setFileList(fileList) {
       var fileArray = [];
       var fileUrlArray = [];
-      // 有些图片不是公开的，所以需要携带token信息做权限校验
-      var token = storage.get("token");
       let _this = this;
       fileList.forEach(function(item, index) {
         var url = item.url.split("?")[0];
@@ -124,7 +120,7 @@ export default {
         var name = item.name;
         var file = {
           name: name,
-          url: url + "?token=" + token
+          url: url
         };
         fileArray.push(file);
         fileUrlArray.push(url);

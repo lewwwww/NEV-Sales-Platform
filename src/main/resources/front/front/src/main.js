@@ -40,7 +40,8 @@ Vue.component('editor', Editor);
 Vue.component('aplayer', aplayer);
 
 Vue.http.options.root = config.baseUrl;
-Vue.http.headers.common['Token'] = localStorage.getItem('Token');
+// 生产环境化改造：Token 由后端写入 HttpOnly Cookie，前端不再手动带 header、不再从 localStorage 读取
+Vue.http.options.credentials = true;
 Vue.http.interceptors.push(function(request, next) {
 　next((response) => {
     if (response.data.code == 401 || response.data.code == 403) {
@@ -53,7 +54,7 @@ Vue.http.interceptors.push(function(request, next) {
 
 router.afterEach((to, from) => {
   if (from.path == '/login') {
-    Vue.http.headers.common['Token'] = localStorage.getItem('Token');
+    // Token 走 HttpOnly Cookie，登录后无需再手动挂 header
   }
 })
 

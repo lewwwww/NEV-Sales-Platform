@@ -1,6 +1,5 @@
 import axios from 'axios'
 import router from '@/router/router-static'
-import storage from '@/utils/storage'
 
 const http = axios.create({
     timeout: 1000 * 86400,
@@ -12,7 +11,7 @@ const http = axios.create({
 })
 // 请求拦截
 http.interceptors.request.use(config => {
-    config.headers['Token'] = storage.get('Token') // 请求头带上token
+    // 生产环境化改造：Token 已由后端写入 HttpOnly Cookie，请求自动携带，无需再从 localStorage 取
     return config
 }, error => {
     return Promise.reject(error)

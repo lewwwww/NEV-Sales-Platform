@@ -120,7 +120,7 @@ export default {
 			method: "post"
 		}).then(({ data }) => {
 			if (data && data.code === 0) {
-				this.$storage.set("Token", data.token);
+				// 生产环境化改造：Token 已由后端写入 HttpOnly Cookie，不再存 localStorage
 				this.$storage.set("role", this.rulesForm.role);
 				this.$storage.set("sessionTable", this.tableName);
 				this.$storage.set("adminName", this.rulesForm.username);

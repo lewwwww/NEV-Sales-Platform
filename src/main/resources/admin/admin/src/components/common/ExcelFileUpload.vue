@@ -44,7 +44,7 @@ export default {
   mounted() {
     this.init();
     this.myHeaders= {
-      'Token':storage.get("Token")
+      // 生产环境化改造：Token 走 HttpOnly Cookie
     }
   },
   watch: {

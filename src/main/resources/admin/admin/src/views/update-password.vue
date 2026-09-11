@@ -69,59 +69,46 @@ export default {
   },
   methods: {
     onLogout() {
+      // 生产环境化改造：登出调用后端接口清 Session 与 HttpOnly Cookie
+      let sessionTable = this.$storage.get("sessionTable");
+      if (sessionTable) {
+        this.$http({ url: sessionTable + '/logout', method: "get" }).then(() => {}).catch(() => {});
+      }
       this.$storage.remove("Token");
       this.$router.replace({ name: "login" });
     },
-    // 修改密码
+    // 修改密码（生产环境化改造：原密码由后端加盐哈希校验，前端不再用 MD5 比对）
     onUpdateHandler() {
       this.$refs["ruleForm"].validate(valid => {
         if (valid) {
-          var password = "";
-	  var md5Flag = true;
-          if (this.user.mima) {
-            password = this.user.mima;
-          } else if (this.user.password) {
-            var md5Flag = false;
-            password = this.user.password;
-          }
-          if (this.user.password) {
-            password = this.user.password;
-          } else if (this.user.password) {
-            var md5Flag = false;
-            password = this.user.password;
-          }
-	if(md5Flag) {
-		if(this.$md5(this.ruleForm.password) != password) {
-			this.$message.error("原密码错误");
-			return;
-		}
-	  } else {
-		if(this.ruleForm.password != password) {
-			this.$message.error("原密码错误");
-			return;
-		}
-	}
           if (this.ruleForm.newpassword != this.ruleForm.repassword) {
             this.$message.error("两次密码输入不一致");
             return;
           }
-          this.user.password = this.ruleForm.newpassword;
-          this.user.mima = this.ruleForm.newpassword;
+          if (this.ruleForm.password == this.ruleForm.newpassword) {
+            this.$message.error("新密码不能与原密码相同");
+            return;
+          }
+          // 按当前账号表组织提交字段：yonghu 表用 mima，users 表用 password
+          var body = { id: this.user.id, oldPassword: this.ruleForm.password };
+          if (this.user.mima !== undefined) {
+            body.mima = this.ruleForm.newpassword;
+          } else {
+            body.password = this.ruleForm.newpassword;
+          }
           this.$http({
             url: `${this.$storage.get("sessionTable")}/update`,
             method: "post",
-            data: this.user
+            data: body
           }).then(({ data }) => {
             if (data && data.code === 0) {
               this.$message({
                 message: "修改密码成功,下次登录系统生效",
                 type: "success",
-                duration: 1500,
-                onClose: () => {
-                }
+                duration: 1500
               });
             } else {
-              this.$message.error(data.msg);
+              this.$message.error(data.msg || "修改失败");
             }
           });
         }

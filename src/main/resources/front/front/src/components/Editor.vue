@@ -92,8 +92,7 @@ export default {
         }
       },
       header: {
-       'Token': localStorage.getItem('Token')
-      } // 有的图片服务器要求请求头需要有token
+      } // 生产环境化改造：Token 走 HttpOnly Cookie，上传无需再带 Token 头
     };
   },
   computed: {

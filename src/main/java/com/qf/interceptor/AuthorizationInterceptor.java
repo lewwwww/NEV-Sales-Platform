@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.qf.annotation.IgnoreAuth;
 import com.qf.entity.TokenEntity;
 import com.qf.service.TokenService;
+import com.qf.utils.CookieUtil;
 import com.qf.utils.R;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +64,11 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        //从header中获取token
-        String token = request.getHeader(LOGIN_TOKEN_KEY);
+        //优先从 HttpOnly Cookie 读取 token（生产环境化改造），兼容历史 Header 传参
+        String token = CookieUtil.getCookieValue(request, CookieUtil.TOKEN_COOKIE_NAME);
+        if(StringUtils.isBlank(token)) {
+        	token = request.getHeader(LOGIN_TOKEN_KEY);
+        }
         
         /**
          * 不需要验证权限的方法直接放过
