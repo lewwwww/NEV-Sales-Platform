@@ -115,6 +115,14 @@ CREATE DATABASE springbootsnu6t DEFAULT CHARACTER SET utf8mb4;
 mysql --user=root --password=henu --host=127.0.0.1 --port=3307 springbootsnu6t < src/springbootsnu6t.sql
 ```
 
+4. （可选）启动 Redis 容器（Session 共享，2026-09-11 起项目使用）：
+
+```powershell
+docker run -d --name hdspringboot-redis -p 6380:6379 -v hdspringboot-redis-data:/data redis:7-alpine redis-server --requirepass hdredis2026 --appendonly yes
+```
+
+> Redis 用于 spring-session-data-redis 的 Session 集中存储（多实例共享登录态）；`--appendonly yes` 开启 AOF 持久化，数据卷挂 `/data`，容器重建数据不丢。`application.yaml` 中 Redis 连接为 `127.0.0.1:6380`、密码 `hdredis2026`。
+
 ### 方式二：本机 MySQL（默认 3306）
 
 1. 启动本机 MySQL 服务。
