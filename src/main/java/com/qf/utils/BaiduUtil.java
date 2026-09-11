@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -247,7 +248,32 @@ public class BaiduUtil {
 
 
 
-    public static String qfChat(String msg) {
+    /** AI 调用线程池（调用级超时兜底用） */
+    private static final ExecutorService AI_EXECUTOR = Executors.newSingleThreadExecutor();
+    /** AI 调用总超时：10 秒（连接 + 读取整体上限） */
+    private static final long AI_TIMEOUT_MS = 10000L;
+
+    /**
+     * 多轮对话版 AI 问答：按 role/content 列表循环拼 messages 传给千帆
+     * @param messages 对话历史（含当前问题），role 取值 user / assistant
+     */
+    public static String qfChat(List<Map<String, String>> messages) {
+        Future<String> future = AI_EXECUTOR.submit(() -> doChat(messages));
+        try {
+            return future.get(AI_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            // 调用级超时：SDK 0.1.1 无公开连接/读取超时 API，用 Future.get 兜底整体耗时
+            future.cancel(true);
+            log.error("AI 调用超时（>{}ms）", AI_TIMEOUT_MS);
+            return "AI 服务响应超时，请稍后再试";
+        } catch (Exception e) {
+            log.error("AI 问答调用失败", e);
+            return "AI 服务暂时不可用，请稍后再试";
+        }
+    }
+
+    /** 真正调千帆：循环拼多轮历史 + 重试 + 降级 */
+    private static String doChat(List<Map<String, String>> messages) {
         try {
             Qianfan qianfan = new Qianfan(ACCESS_KEY, ACCESS_SECRET_KEY);
             // 配置重试：网络抖动/瞬时失败最多重试 2 次，指数退避，避免直接返回错误
@@ -256,14 +282,26 @@ public class BaiduUtil {
                     .setBackoffFactor(1.5)
                     .setMaxWaitInterval(5000);
             qianfan.setRetryConfig(retryConfig);
-            // 指定模型
-            ChatResponse resp = qianfan.chatCompletion()
-                    .model("ERNIE-3.5-8K")
-                    .addMessage("user", msg)
-                    .execute();
+            // 指定模型 + 循环拼多轮历史消息
+            com.baidubce.qianfan.core.builder.ChatBuilder builder = qianfan.chatCompletion()
+                    .model("ERNIE-3.5-8K");
+            if (messages != null) {
+                for (Map<String, String> m : messages) {
+                    String role = m.get("role");
+                    String content = m.get("content");
+                    if (role == null || role.isEmpty()) {
+                        role = "user";
+                    }
+                    if (content == null) {
+                        content = "";
+                    }
+                    builder.addMessage(role, content);
+                }
+            }
+            ChatResponse resp = builder.execute();
             String result = resp.getResult();
             if (result == null || result.isEmpty()) {
-                log.warn("AI 返回空结果, msg={}", msg);
+                log.warn("AI 返回空结果, messages={}", messages);
                 return "抱歉，AI 暂时没有回复，请换个问法再试";
             }
             return result;

@@ -124,7 +124,9 @@
           v-model="inputMessage"
           type="textarea"
           :rows="3"
-          placeholder="请输入你的问题..."
+          maxlength="500"
+          show-word-limit
+          placeholder="请输入你的问题...（500字以内）"
           @keydown.enter.prevent="sendMessage"
           :disabled="isSending"
           class="message-input"
@@ -236,6 +238,11 @@ export default {
     async sendMessage() {
       const content = this.inputMessage.trim();
       if (!content || this.isSending) return;
+      // 前端长度拦截（后端也有 500 字校验，双层防线）
+      if (content.length > 500) {
+        this.$message.error('问题太长了，请精简到500字以内');
+        return;
+      }
 
       // 1. 添加用户消息到列表
       this.messageList.push({
