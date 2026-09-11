@@ -109,6 +109,8 @@
 			<div class="name line1" :style='{"cursor":"pointer","padding":"4px 10px","boxShadow":"0px 0px 0px #f1e288","margin":"0px auto 0 auto","borderColor":"#9dcde9","whiteSpace":"nowrap","color":"#333","textAlign":"center","overflow":"hidden","borderRadius":"0","background":"#fff","borderWidth":"0 0 1px","width":"100%","lineHeight":"24px","fontSize":"14px","textOverflow":"ellipsis","borderStyle":"dotted"}'>{{item.pinpaileibie}}</div>
 			<div class="name line1" :style='{"cursor":"pointer","padding":"4px 10px","boxShadow":"0px 0px 0px #f1e288","margin":"0px auto 0 auto","borderColor":"#9dcde9","whiteSpace":"nowrap","color":"#333","textAlign":"center","overflow":"hidden","borderRadius":"0","background":"#fff","borderWidth":"0 0 1px","width":"100%","lineHeight":"24px","fontSize":"14px","textOverflow":"ellipsis","borderStyle":"dotted"}'>颜色:{{item.yanse}}</div>
 		</div>
+		<!-- 空态兜底：无推荐数据时正常展示，不白屏 -->
+		<div v-if="!xinnengyuanqicheRecommend.length" :style='{"color":"#999","textAlign":"center","width":"100%","padding":"40px 0","fontSize":"14px"}'>暂无推荐车辆，去看看最新上架的新车吧</div>
 	</div>
 	
 	

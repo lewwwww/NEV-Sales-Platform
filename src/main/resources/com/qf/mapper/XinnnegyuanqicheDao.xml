@@ -67,4 +67,14 @@
         where id = #{id} and shuliang >= #{num}
     </update>
 
+    <!-- 点击时间闭环：用户端访问详情页刷新 clicktime（热门推荐 autoSort 按 clicktime 倒序）
+         防刷：date(clicktime) < curdate() 才更新 —— 同一辆车同一天最多写库 1 次；
+         clicktime 为 NULL 的车首次被浏览也会写入；条件更新原子，无需先查再写 -->
+    <update id="touchClicktime">
+        update xinnengyuanqiche
+        set clicktime = now()
+        where id = #{id}
+          and (clicktime is null or date(clicktime) &lt; curdate())
+    </update>
+
 </mapper>

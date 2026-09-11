@@ -22,4 +22,10 @@ public interface XinnnegyuanqicheService extends IService<XinnengyuanqicheEntity
      * 库存条件扣减（防超卖）
      */
     int subStock(Long id, Integer num);
+
+    /**
+     * 最近点击时间刷新（点击时间闭环）
+     * 用户端进入详情页时刷新该车 clicktime；防刷见 Dao 实现（同一天每车最多写库 1 次）
+     */
+    int touchClicktime(Long id);
 }

@@ -46,4 +46,9 @@ public class XinnnegyuanqicheServiceImpl extends ServiceImpl<XinnnegyuanqicheDao
     public int subStock(Long id, Integer num) {
         return baseMapper.subStock(id, num);
     }
+
+    @Override
+    public int touchClicktime(Long id) {
+        return baseMapper.touchClicktime(id);
+    }
 }

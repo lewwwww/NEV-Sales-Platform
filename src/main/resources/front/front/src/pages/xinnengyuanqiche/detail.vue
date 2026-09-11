@@ -79,6 +79,8 @@
 			      <div :style='{"padding":"4px 5px 0","borderColor":"#9dcde9","color":"#333","background":"none","borderWidth":"0 0 1px","lineHeight":"24px","fontSize":"14px","borderStyle":"dotted"}'>{{item.yanse}}</div>
 			      <!-- <div :style='{"padding":"0 5px","lineHeight":"24px","fontSize":"14px","color":"#999","textAlign":"right"}'>2022-02-02</div> -->
 			    </div>
+			    <!-- 空态兜底：无热门数据时正常展示，不白屏 -->
+			    <div v-if="!hotList.length" :style='{"color":"#999","textAlign":"center","width":"100%","padding":"30px 0","fontSize":"14px"}'>暂无热门车辆，去看看最新上架的新车吧</div>
 			  </div>
 			</div>
 		</div>

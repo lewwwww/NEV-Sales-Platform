@@ -62,6 +62,14 @@ public class XinnnegyuanqicheController {
     @RequestMapping("/detail/{id}")
     public R detail(@PathVariable("id") Long id, HttpServletRequest request) {
         XinnengyuanqicheEntity xinnengyuanqiche1 = xinnnegyuanqicheService.selectById(id);
+        // 点击时间闭环：用户端访问详情页即刷新该车 clicktime（热门推荐 autoSort 按 clicktime 倒序）。
+        // 防刷：touchClicktime 是 SQL 条件更新（date(clicktime) < curdate() 才写库），
+        // 同一辆车同一天最多更新 1 次，把高频"点击"压成低频"写库"；且本接口经拦截器鉴权，
+        // 未登录请求在进入方法前已被 401 拦截，匿名脚本无法刷量。
+        // 更新失败（当天已刷过/车辆不存在）不影响详情返回。
+        if (xinnengyuanqiche1 != null) {
+            xinnnegyuanqicheService.touchClicktime(id);
+        }
         return R.ok().put("data", xinnengyuanqiche1);
     }
 
@@ -162,25 +170,14 @@ public class XinnnegyuanqicheController {
     @RequestMapping("/autoSort")
     public R autoSort(@RequestParam Map<String, Object> params, XinnengyuanqicheEntity xinnengyuanqiche, HttpServletRequest request, String pre) {
         EntityWrapper<XinnengyuanqicheEntity> ew = new EntityWrapper<>();
-        HashMap<String, Object> newMap = new HashMap<>();
-        HashMap<String, Object> param = new HashMap<>();
-        Iterator<Map.Entry<String, Object>> it = param.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Object> entry = it.next();
-            String key = entry.getKey();
-            String newkey = entry.getKey();
-            if (pre.endsWith(".")) {
-                newMap.put(pre + newkey, entry.getValue());
-
-            } else if (StringUtils.isEmpty(pre)) {
-                newMap.put(newkey, entry.getValue());
-            } else {
-                newMap.put(pre + "." + newkey, entry.getValue());
-            }
-        }
-        param.put("sort", "clicktime");
-        param.put("order", "desc");
-        PageUtils pageUtils = xinnnegyuanqicheService.queryPage(param, MPUtil.likeOrEq(ew, xinnengyuanqiche));
+        // 默认推荐（热门 + 新上架混合排序，物品冷启动兜底）：
+        // coalesce(clicktime, addtime) —— 有点击的按最近点击时间倒序（热门在前）；
+        // clicktime 为 NULL 的新车用上架时间 addtime 顶替参与排序，保证新车也有曝光机会、不会永远沉底。
+        // （修复说明：原实现 param.put("sort","clicktime") 传排序字段，但 Query 只认 sidx 键，sort 未生效导致无排序；
+        //   且前端 page/limit 也没传入 queryPage。现改为：直接用前端 params + 在 Wrapper 上拼 ORDER BY，
+        //   一箭双雕：分页/limit 生效 + 排序修复 + 新车曝光。）
+        ew.orderBy("coalesce(clicktime, addtime) desc");
+        PageUtils pageUtils = xinnnegyuanqicheService.queryPage(params, MPUtil.likeOrEq(ew, xinnengyuanqiche));
         return R.ok().put("data", pageUtils);
 
     }
@@ -216,10 +213,10 @@ public class XinnnegyuanqicheController {
         }
         //设置查询条件
         EntityWrapper<XinnengyuanqicheEntity> ew = new EntityWrapper<>();
-        //设置排序字段参数条件 按照id降序
-        params.put("sort", "id");
-        params.put("order", "desc");
-        //执行查询
+        // 兜底排序与 autoSort 保持一致：热门点击倒序 + 新车按上架时间倒序（coalesce 顶替），
+        // 无收藏/收藏不足时补足的是"最近热门 + 新上架"的稳定序列（用户冷启动兜底）
+        ew.orderBy("coalesce(clicktime, addtime) desc");
+        //执行查询（直接用前端 params，page/limit 才真正生效）
         PageUtils page = xinnnegyuanqicheService.queryPage(params, MPUtil.likeOrEq(ew, xinnengyuanqiche));
         //获取数据列表
         List<XinnengyuanqicheEntity> pageList = (List<XinnengyuanqicheEntity>) page.getList();
